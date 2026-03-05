@@ -12,7 +12,7 @@ const EMAILJS_SERVICE_ID  = 'service_2pco3m9';   // Email Services tab
 const EMAILJS_TEMPLATE_ID = 'template_8n2o2yt';  // Email Templates tab
 
 /* ---- Claude AI Configuration — get key from console.anthropic.com ---- */
-const CLAUDE_API_KEY = 'YOUR_CLAUDE_KEY'; // Get from console.anthropic.com
+const CLAUDE_API_KEY = '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'; // Get from console.anthropic.com
 
 /* ---- Global state ---- */
 let charts          = {};
