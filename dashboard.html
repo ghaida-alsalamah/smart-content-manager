@@ -710,13 +710,15 @@
 
 <!-- Chatbot FAB -->
 <button class="chat-fab hidden" id="chatFab" data-i18n="chat.title" data-i18n-attr="title">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="14" height="11" rx="2.5"/><circle cx="9.5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="14.5" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M9.5 15.5h5"/><path d="M12 7V4"/><circle cx="12" cy="3.5" r="1" fill="currentColor" stroke="none"/></svg>
-  <span class="chat-fab-text" data-i18n="chat.askAI">Ask AI</span>
+  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="14" height="11" rx="2.5"/><circle cx="9.5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="14.5" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M9.5 15.5h5"/><path d="M12 7V4"/><circle cx="12" cy="3.5" r="1" fill="currentColor" stroke="none"/></svg>
+  <div class="chat-fab-bubble" id="chatFabBubble"><span data-i18n="chat.bubble">Ask me anything!</span></div>
 </button>
 
 <!-- Chatbot Panel -->
 <div class="chat-panel" id="chatPanel">
-  <div class="chat-resize-handle" id="chatResizeHandle" title="Drag to resize"></div>
+  <div class="chat-resize-handle" id="chatResizeHandle" title="Drag to resize">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12L12 1"/><path d="M5 12H1V8"/><path d="M12 5V1H8"/></svg>
+  </div>
   <div class="chat-header">
     <div class="chat-header-info">
       <div class="chat-avatar">

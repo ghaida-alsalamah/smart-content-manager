@@ -2339,13 +2339,10 @@ function initChatResize() {
     const dy = startY - e.clientY;
     const newW = Math.min(Math.max(startW + dx, 390), 700);
     const newH = Math.min(Math.max(startH + dy, 400), 780);
-    panel.style.width = newW + 'px';
-    const msgs   = document.getElementById('chatMessages');
-    const header = panel.querySelector('.chat-header');
-    const input  = panel.querySelector('.chat-input-row');
-    if (msgs && header && input) {
-      msgs.style.maxHeight = (newH - header.offsetHeight - input.offsetHeight) + 'px';
-    }
+    panel.style.width  = newW + 'px';
+    panel.style.height = newH + 'px';
+    const msgs = document.getElementById('chatMessages');
+    if (msgs) { msgs.style.maxHeight = 'none'; msgs.style.minHeight = '0'; }
   }
 
   function stopResize() {
@@ -2364,13 +2361,17 @@ function initChatbot() {
 
   btn.addEventListener('click', () => {
     panel.classList.toggle('open');
+    const bubble = document.getElementById('chatFabBubble');
     if (panel.classList.contains('open')) {
+      if (bubble) bubble.style.display = 'none';
       const msgs = document.getElementById('chatMessages');
       if (msgs && msgs.children.length === 0) {
         _appendChatMsg('bot', i18n.t('chat.welcome'));
         _appendChatSuggestions();
       }
       setTimeout(() => input.focus(), 50);
+    } else {
+      if (bubble) bubble.style.display = '';
     }
   });
 
