@@ -286,9 +286,9 @@
 /* Brand overview — header banner */
 [dir="rtl"] .brand-header-banner { direction: rtl; }
 [dir="rtl"] .brand-header-banner > div { text-align: right; }
-/* Brand overview — section heading h2 (flex child needs explicit align) */
-[dir="rtl"] .section-heading { direction: rtl; }
-[dir="rtl"] .section-heading h2 { text-align: right; }
+/* Brand overview — section heading: push h2 to the right in RTL */
+[dir="rtl"] .section-heading h2   { order: 2; text-align: right; }
+[dir="rtl"] .section-heading .line { order: 1; }
 /* Brand overview — feature cards (use .card, not .kpi-card) */
 [dir="rtl"] #section-brand-overview .card { text-align: right; }
 
