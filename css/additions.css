@@ -828,6 +828,15 @@
 }
 body[dir="rtl"] .chat-fab { right: auto; left: 24px; }
 
+/* ── Hero robot — light mode ─────────────────────────────── */
+[data-theme="light"] #bodyGrad stop:first-child { stop-color: #DDD6FE; }
+[data-theme="light"] #bodyGrad stop:last-child  { stop-color: #C7D2FE; }
+[data-theme="light"] #headGrad stop:first-child { stop-color: #C4B5FD; }
+[data-theme="light"] #headGrad stop:last-child  { stop-color: #A5B4FC; }
+[data-theme="light"] .hr-dark   { fill: #312E81; }
+[data-theme="light"] .hr-screen { fill: #EEF2FF; }
+[data-theme="light"] .hr-card-val { fill: #1E293B; }
+
 /* Light mode robot adjustments */
 [data-theme="light"] .chat-fab {
   filter: drop-shadow(0 6px 18px rgba(109,40,217,0.22));
