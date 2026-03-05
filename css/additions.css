@@ -828,6 +828,27 @@
 }
 body[dir="rtl"] .chat-fab { right: auto; left: 24px; }
 
+/* Light mode robot adjustments */
+[data-theme="light"] .chat-fab {
+  filter: drop-shadow(0 6px 18px rgba(109,40,217,0.22));
+}
+[data-theme="light"] .chat-fab:hover {
+  filter: drop-shadow(0 10px 28px rgba(109,40,217,0.38));
+}
+/* Lighten gradient stops to a brighter palette on light bg */
+[data-theme="light"] #fabRG stop:first-child { stop-color: #a78bfa; }
+[data-theme="light"] #fabRG stop:last-child  { stop-color: #60a5fa; }
+[data-theme="light"] #fabRGd stop:first-child { stop-color: #8b5cf6; }
+[data-theme="light"] #fabRGd stop:last-child  { stop-color: #3b82f6; }
+/* Inner panel slightly more visible */
+[data-theme="light"] .rob-inner  { opacity: 0.3; }
+/* Pupils — darker for contrast on lighter head */
+[data-theme="light"] .rob-pupil  { fill: #1e293b; }
+/* Antenna — darken for visibility on light bg */
+[data-theme="light"] .rob-antenna-line { stroke: #7c3aed; }
+[data-theme="light"] .rob-antenna-glow { fill: #7c3aed; opacity: 0.25; }
+[data-theme="light"] .rob-antenna-tip  { fill: #a78bfa; }
+
 /* speech bubble */
 .chat-fab-bubble {
   position: absolute;
