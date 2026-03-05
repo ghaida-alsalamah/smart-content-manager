@@ -79,6 +79,10 @@ window.onSectionShow = function(id) {
 
 // Re-render all dynamic content when language changes
 i18n.afterApply = function() {
+  // Re-translate sidebar role label
+  const roleEl = document.getElementById('sidebarRole');
+  if (roleEl && userRole) roleEl.textContent = i18n.t('role.' + userRole);
+
   if (!csvData || csvData.length === 0) return;
   const data = getFilteredData();
   const kpis = computeKPIs(data);
@@ -87,6 +91,8 @@ i18n.afterApply = function() {
   if (currentSection === 'insights')    renderInsights();
   if (currentSection === 'future-plan') renderFuturePlan(data, kpis);
   if (currentSection === 'ad-pricing')  renderAdPricing(data, kpis);
+  // Re-trigger AI so strategy text matches the selected language
+  _triggerAI();
 };
 
 /* ============================================================
@@ -109,7 +115,7 @@ async function detectUserRole() {
   if (!data) return;
   userRole = data.role || 'creator';
   const roleEl = document.getElementById('sidebarRole');
-  if (roleEl) roleEl.textContent = userRole;
+  if (roleEl) { roleEl.setAttribute('data-i18n', 'role.' + userRole); roleEl.textContent = i18n.t('role.' + userRole); }
   if (userRole === 'brand') {
     const cn = document.getElementById('creatorNav');
     const bn = document.getElementById('brandNav');
@@ -849,6 +855,10 @@ function _triggerAI() {
 async function callClaudeAI(data, kpis) {
   if (_isLocal) return null; // AI only available on deployed Vercel site
   const context = buildCreatorContext(data, kpis);
+  const isAr = i18n.current === 'ar';
+  const langInstruction = isAr
+    ? '\n\nIMPORTANT: Write ALL text values in the JSON in Arabic (Modern Standard Arabic). Every string field — titles, explanations, actions, plans, summary — must be in Arabic.'
+    : '';
   const prompt  = `You are a friendly and knowledgeable creator coach helping a content creator understand their performance. Analyze the data below and return ONLY valid JSON — no markdown, no text outside the JSON.
 
 CREATOR ANALYTICS:
@@ -879,7 +889,7 @@ Rules:
 - Every explanation must reference actual numbers from the data to feel personalized, not generic.
 - Plans must be specific to this creator's situation — never copy-paste generic advice.
 - severity "high" = needs attention soon, "medium" = worth addressing, "low" = a win or minor note.
-- Return valid JSON only.`;
+- Return valid JSON only.${langInstruction}`;
 
   const res = await fetch(_claudeURL, {
     method: 'POST',

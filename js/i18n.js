@@ -31,7 +31,7 @@ const translations = {
     /* ---------- Features ---------- */
     "features.tag":     "What We Offer",
     "features.title":   "Everything You Need to Grow",
-    "features.sub":     "Claude AI reads your data and tells you exactly what to do next — no guesswork, no spreadsheets.",
+    "features.sub":     "Just export your analytics, upload the CSV, and get AI-powered insights instantly.",
     "feat1.title":      "AI-Powered Insights",
     "feat1.body":       "Claude AI analyzes your real numbers and surfaces what matters most — growth signals, risks, and opportunities you'd miss on your own.",
     "feat2.title":      "Smart Data Assistant",
@@ -460,6 +460,13 @@ const translations = {
     "search.found":           "found",
     "search.send.request":    "Send Request",
     "search.sending":         "Sending...",
+
+    /* ---------- Role labels ---------- */
+    "role.creator":           "Creator",
+    "role.brand":             "Brand",
+
+    /* ---------- Upload mobile button ---------- */
+    "dash.upload.csv.mobile": "Choose Analytics CSV",
 
     /* ---------- Toast / status messages ---------- */
     "toast.upload.success":   "Analytics loaded successfully!",
@@ -1002,6 +1009,13 @@ const translations = {
     "search.found":           "تم العثور عليه/عليهم",
     "search.send.request":    "إرسال طلب",
     "search.sending":         "جارٍ الإرسال...",
+
+    /* ---------- Role labels ---------- */
+    "role.creator":           "مبدع",
+    "role.brand":             "علامة تجارية",
+
+    /* ---------- Upload mobile button ---------- */
+    "dash.upload.csv.mobile": "اختر ملف CSV للتحليلات",
 
     /* ---------- Toast / status messages ---------- */
     "toast.upload.success":   "تم تحميل التحليلات بنجاح!",
