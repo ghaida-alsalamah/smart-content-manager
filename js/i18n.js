@@ -44,7 +44,7 @@ const translations = {
     /* ---------- How it works ---------- */
     "how.tag":          "How It Works",
     "how.title":        "From Upload to Strategy in 60 Seconds",
-    "how.sub":          "No integrations. No API keys. Just upload your CSV and let the engine work.",
+    "how.sub":          "Just export your analytics, upload the CSV, and get AI-powered insights instantly.",
     "step1.title":      "Upload CSV",
     "step1.desc":       "Export analytics from any platform and upload the CSV file.",
     "step2.title":      "Instant Analysis",
@@ -587,7 +587,7 @@ const translations = {
     /* ---------- How it works ---------- */
     "how.tag":          "طريقة العمل",
     "how.title":        "من الرفع إلى الاستراتيجية في 60 ثانية",
-    "how.sub":          "لا تكاملات. لا مفاتيح API. فقط ارفع ملف CSV ودع المحرك يعمل.",
+    "how.sub":          "فقط صدّر تحليلاتك، ارفع ملف CSV، واحصل على رؤى مدعومة بالذكاء الاصطناعي فوراً.",
     "step1.title":      "رفع الملف",
     "step1.desc":       "صدّر التحليلات من أي منصة وارفع ملف CSV.",
     "step2.title":      "تحليل فوري",
