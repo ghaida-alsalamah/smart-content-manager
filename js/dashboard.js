@@ -862,53 +862,48 @@ async function callClaudeAI(data, kpis) {
   if (_isLocal) return null; // AI only available on deployed Vercel site
   const context = buildCreatorContext(data, kpis);
   const isAr = i18n.current === 'ar';
-  const langPrefix = isAr
-    ? 'CRITICAL: Output ONLY the raw JSON object — absolutely no Arabic or English text before or after it. Write all narrative fields (title, explanation, action, plans values, actions array items, summary) in Arabic. Keep "id" as a short English slug and "severity" as "high", "medium", or "low".\n\n'
-    : '';
-  const prompt  = `${langPrefix}You are a friendly and knowledgeable creator coach helping a content creator understand their performance. Analyze the data below and return ONLY valid JSON — no markdown, no text outside the JSON.
+  const lang = isAr ? 'Arabic' : 'English';
+  const prompt  = `You are a friendly and knowledgeable creator coach. Analyze the data below and return ONLY a raw JSON object — no markdown fences, no explanatory text before or after the JSON.
 
 CREATOR ANALYTICS:
 ${context}
 
-Return exactly this JSON structure:
+Return exactly this JSON structure (write all string values in ${lang}):
 {
   "insights": [
     {
-      "id": "short-slug",
+      "id": "short-english-slug",
       "severity": "high|medium|low",
-      "title": "Clear, encouraging 5-8 word title",
-      "explanation": "1-2 friendly sentences that reference specific numbers and explain what they mean in plain language — avoid jargon",
-      "action": "One clear, encouraging, specific next step the creator can take today"
+      "title": "[${lang}] Clear, encouraging 5-8 word title",
+      "explanation": "[${lang}] 1-2 friendly sentences referencing specific numbers",
+      "action": "[${lang}] One clear, specific next step the creator can take today"
     }
   ],
   "plans": {
-    "30": "2-3 warm, motivating sentences for a 30-day plan tailored to this creator's exact numbers and situation",
-    "90": "2-3 sentences for a 90-day plan — build on the 30-day momentum with concrete milestones",
-    "180": "2-3 sentences for a 6-month vision — paint an inspiring picture of where this creator could be"
+    "30": "[${lang}] 2-3 warm, motivating sentences for a 30-day plan",
+    "90": "[${lang}] 2-3 sentences for a 90-day plan",
+    "180": "[${lang}] 2-3 sentences for a 6-month vision"
   },
   "actions": {
-    "30": ["3 to 5 specific, actionable bullet points for the next 30 days based on this creator's real data"],
-    "90": ["3 to 5 specific action steps for the 90-day period"],
-    "180": ["3 to 5 strategic action steps for the 6-month horizon"]
+    "30": ["[${lang}] 3 to 5 specific actionable bullet points for the next 30 days"],
+    "90": ["[${lang}] 3 to 5 action steps for the 90-day period"],
+    "180": ["[${lang}] 3 to 5 strategic steps for the 6-month horizon"]
   },
-  "summary": "One warm, honest sentence summarizing this creator's overall performance — mention a key number and end on an encouraging note"
+  "summary": "[${lang}] One warm sentence summarizing overall performance"
 }
 
 Rules:
-- 2 to 4 insights maximum. Always include at least one positive signal alongside any problems.
-- Write like a supportive coach, not a report — use "your" and "you" naturally.
-- Every explanation must reference actual numbers from the data to feel personalized, not generic.
-- Plans must be specific to this creator's situation — never copy-paste generic advice.
-- Actions must be concrete next steps, not vague advice — reference actual numbers where relevant.
-- severity "high" = needs attention soon, "medium" = worth addressing, "low" = a win or minor note.
-- Return valid JSON only.`;
+- 2 to 4 insights maximum. Always include at least one positive signal.
+- Keep "id" as a short English slug. Keep "severity" as "high", "medium", or "low".
+- Reference actual numbers from the data in every explanation.
+- Return ONLY the JSON object — nothing else.`;
 
   const res = await fetch(_claudeURL, {
     method: 'POST',
     headers: _claudeHeaders,
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }),
   });
