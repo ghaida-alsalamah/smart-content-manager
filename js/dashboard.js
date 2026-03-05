@@ -30,6 +30,7 @@ let currentSection  = 'overview';
 /* ---- AI state ---- */
 window._aiResult  = null;   // parsed JSON from Claude (insights + plans + summary)
 window._aiLoading = false;  // true while the API call is in-flight
+let _aiGeneration = 0;      // incremented each call; stale completions are discarded
 window._currentPlanPeriod = 30;
 
 /* ============================================================
@@ -828,19 +829,20 @@ function _triggerAI() {
   if (_isLocal || csvData.length === 0) return;
   window._aiResult  = null;
   window._aiLoading = true;
+  const platformAtStart = activePlatform; // capture so stale result is discarded if user switches again
+  const generation = ++_aiGeneration;     // unique ID for this call; earlier calls are discarded
   // Immediately show spinner if the user is already on an AI section
   if (currentSection === 'insights')    renderInsights();
   if (currentSection === 'future-plan') renderFuturePlanForPeriod(window._currentPlanPeriod || 30);
-  const platformAtStart = activePlatform; // capture so stale result is discarded if user switches again
   (async () => {
     try {
       const d = getFilteredData();
       const k = computeKPIs(d);
       const result = await callClaudeAI(d, k);
-      // Only store if the platform hasn't changed while the call was in flight
-      if (activePlatform === platformAtStart) window._aiResult = result;
-    } catch (_) { /* silent — rule-based fallback will be used */ }
-    if (activePlatform === platformAtStart) {
+      // Only store if this is still the latest call and platform hasn't changed
+      if (generation === _aiGeneration && activePlatform === platformAtStart) window._aiResult = result;
+    } catch (_) { /* silent */ }
+    if (generation === _aiGeneration && activePlatform === platformAtStart) {
       window._aiLoading = false;
       if (currentSection === 'insights')    renderInsights();
       if (currentSection === 'future-plan') renderFuturePlanForPeriod(window._currentPlanPeriod || 30);
