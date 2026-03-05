@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — Smart Content Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/additions.css" />
+</head>
+<body>
+
+<!-- Page Loader -->
+<div class="page-loader" id="pageLoader">
+  <div class="loader-logo">Smart Content Manager</div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="container">
+    <a href="index.html" class="nav-brand">
+      <svg viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="url(#lg4)"/>
+        <path d="M8 20l5-6 4 4 3-5 4 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="10" r="3" fill="white" opacity="0.9"/>
+        <defs>
+          <linearGradient id="lg4" x1="0" y1="0" x2="32" y2="32">
+            <stop stop-color="#8B5CF6"/>
+            <stop offset="1" stop-color="#00C6FF"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span>SCM</span>
+    </a>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme"></button>
+      <button class="lang-btn" id="langBtn" title="Switch language">عر</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Auth Page -->
+<div class="auth-page">
+  <div class="auth-card" style="max-width:500px;">
+    <!-- Logo -->
+    <div class="auth-logo">
+      <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="url(#lg5)"/>
+        <path d="M8 20l5-6 4 4 3-5 4 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="10" r="3" fill="white" opacity="0.9"/>
+        <defs>
+          <linearGradient id="lg5" x1="0" y1="0" x2="32" y2="32">
+            <stop stop-color="#8B5CF6"/>
+            <stop offset="1" stop-color="#00C6FF"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="auth-logo-text">Smart Content Manager</span>
+    </div>
+
+    <h1 class="auth-title" data-i18n="register.title"></h1>
+    <p class="auth-sub">
+      <span data-i18n="register.sub"></span><a href="login.html" data-i18n="register.sub.link"></a>
+    </p>
+
+    <!-- Alert -->
+    <div class="alert" id="regAlert" role="alert"></div>
+
+    <!-- Form -->
+    <form id="registerForm" novalidate>
+
+      <!-- Role selector -->
+      <div class="form-group">
+        <label class="form-label" data-i18n="register.role"></label>
+        <div class="role-grid">
+          <div class="role-card selected" data-role="creator">
+            <span class="role-icon">🎬</span>
+            <span class="role-name" data-i18n="register.creator.name"></span>
+            <span class="role-desc" data-i18n="register.creator.desc"></span>
+          </div>
+          <div class="role-card" data-role="brand">
+            <span class="role-icon">🏢</span>
+            <span class="role-name" data-i18n="register.brand.name"></span>
+            <span class="role-desc" data-i18n="register.brand.desc"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Types (creator only) -->
+      <div class="form-group" id="contentTypeGroup">
+        <label class="form-label" data-i18n="register.content.type"></label>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px;" data-i18n="register.content.type.hint"></p>
+        <div class="content-type-chips" id="contentTypeChips">
+          <button type="button" class="content-chip" data-type="entertainment" data-i18n="ctype.entertainment">Entertainment</button>
+          <button type="button" class="content-chip" data-type="makeup"        data-i18n="ctype.makeup">Makeup & Beauty</button>
+          <button type="button" class="content-chip" data-type="educational"   data-i18n="ctype.educational">Educational</button>
+          <button type="button" class="content-chip" data-type="fitness"       data-i18n="ctype.fitness">Fitness</button>
+          <button type="button" class="content-chip" data-type="gaming"        data-i18n="ctype.gaming">Gaming</button>
+          <button type="button" class="content-chip" data-type="food"          data-i18n="ctype.food">Food</button>
+          <button type="button" class="content-chip" data-type="travel"        data-i18n="ctype.travel">Travel</button>
+          <button type="button" class="content-chip" data-type="tech"          data-i18n="ctype.tech">Tech</button>
+          <button type="button" class="content-chip" data-type="other"         data-i18n="ctype.other">Other</button>
+        </div>
+      </div>
+
+      <!-- Name -->
+      <div class="form-group">
+        <label class="form-label" for="regName" data-i18n="register.name"></label>
+        <input
+          class="form-input"
+          type="text"
+          id="regName"
+          name="name"
+          autocomplete="name"
+          data-i18n-attr="placeholder"
+          data-i18n="register.name"
+          required
+        />
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label class="form-label" for="regEmail" data-i18n="register.email"></label>
+        <input
+          class="form-input"
+          type="email"
+          id="regEmail"
+          name="email"
+          autocomplete="email"
+          data-i18n-attr="placeholder"
+          data-i18n="register.email"
+          required
+        />
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label class="form-label" for="regPassword" data-i18n="register.password"></label>
+        <div style="position:relative;">
+          <input
+            class="form-input"
+            type="password"
+            id="regPassword"
+            name="password"
+            autocomplete="new-password"
+            placeholder="Min. 6 characters"
+            required
+            style="padding-right: 48px;"
+          />
+          <button type="button" id="toggleRegPass" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;" title="Show password">
+            👁
+          </button>
+        </div>
+        <!-- Password strength bar -->
+        <div style="margin-top:8px;">
+          <div id="strengthBar" style="height:3px;border-radius:2px;background:var(--border);overflow:hidden;">
+            <div id="strengthFill" style="height:100%;width:0%;transition:width 0.3s ease,background 0.3s ease;border-radius:2px;"></div>
+          </div>
+          <div id="strengthLabel" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-full" id="regBtn" style="margin-top:12px;" data-i18n="register.btn"></button>
+
+      <p style="font-size:0.78rem;color:var(--text-muted);text-align:center;margin-top:16px;" data-i18n="register.terms"></p>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script src="js/firebase.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/auth.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    theme.init();
+    i18n.init();
+
+    // Content type chips toggle
+    document.querySelectorAll('.content-chip').forEach(chip => {
+      chip.addEventListener('click', () => chip.classList.toggle('selected'));
+    });
+
+    // Show/hide content types based on role selection
+    document.querySelectorAll('.role-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const group = document.getElementById('contentTypeGroup');
+        if (group) group.style.display = card.dataset.role === 'creator' ? '' : 'none';
+      });
+    });
+
+    // Password show/hide
+    const passInput = document.getElementById('regPassword');
+    const toggleBtn = document.getElementById('toggleRegPass');
+    if (toggleBtn && passInput) {
+      toggleBtn.addEventListener('click', () => {
+        passInput.type = passInput.type === 'password' ? 'text' : 'password';
+        toggleBtn.textContent = passInput.type === 'password' ? '👁' : '🙈';
+      });
+    }
+
+    // Password strength indicator
+    passInput && passInput.addEventListener('input', () => {
+      const val = passInput.value;
+      const fill = document.getElementById('strengthFill');
+      const label = document.getElementById('strengthLabel');
+      let score = 0;
+      if (val.length >= 6)  score++;
+      if (val.length >= 10) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      const levels = [
+        { width: '0%',   color: 'transparent', label: '' },
+        { width: '20%',  color: '#F87171',      label: 'Weak' },
+        { width: '40%',  color: '#FB923C',      label: 'Fair' },
+        { width: '60%',  color: '#FBBF24',      label: 'Good' },
+        { width: '80%',  color: '#34D399',      label: 'Strong' },
+        { width: '100%', color: '#10B981',      label: 'Very Strong' },
+      ];
+      const lvl = levels[Math.min(score, 5)];
+      if (fill)  { fill.style.width = val.length ? lvl.width : '0%'; fill.style.background = lvl.color; }
+      if (label) { label.textContent = val.length ? lvl.label : ''; label.style.color = lvl.color; }
+    });
+  });
+</script>
+</body>
+</html>

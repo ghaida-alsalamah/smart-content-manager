@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Smart Content Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/additions.css" />
+  <style>
+    .chart-canvas-wrap    { position:relative; height:240px; }
+    .chart-canvas-wrap-sm { position:relative; height:200px; }
+    canvas { max-width: 100%; }
+  </style>
+</head>
+<body>
+
+<!-- Page Loader -->
+<div class="page-loader" id="pageLoader">
+  <div class="loader-logo">Smart Content Manager</div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+</div>
+
+<!-- Mobile sidebar overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ============================================================  NAVBAR  ============================================================ -->
+<nav class="navbar">
+  <div class="container">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="icon-btn" id="menuToggle" aria-label="Toggle sidebar" style="display:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <a href="index.html" class="nav-brand">
+        <svg viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="url(#lgD)"/>
+          <path d="M8 20l5-6 4 4 3-5 4 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="22" cy="10" r="3" fill="white" opacity="0.9"/>
+          <defs><linearGradient id="lgD" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#8B5CF6"/><stop offset="1" stop-color="#00C6FF"/></linearGradient></defs>
+        </svg>
+        <span>SCM</span>
+      </a>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle theme"></button>
+      <button class="lang-btn" id="langBtn">عر</button>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn" data-i18n="nav.logout"></button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================  DASHBOARD LAYOUT  ============================================================ -->
+<div class="dashboard-layout">
+
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebarAvatar">?</div>
+        <div>
+          <div class="sidebar-name" id="sidebarName">Loading...</div>
+          <div class="sidebar-role" id="sidebarRole">creator</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Creator nav -->
+    <nav class="sidebar-nav" id="creatorNav">
+      <div class="sidebar-section-label" data-i18n="creator.nav.analytics">Analytics</div>
+      <a class="sidebar-link active" onclick="showSection('overview',this);return false;" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span data-i18n="dash.nav.overview"></span>
+      </a>
+      <a class="sidebar-link" onclick="showSection('charts',this);return false;" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span data-i18n="dash.nav.charts"></span>
+      </a>
+      <a class="sidebar-link" onclick="showSection('insights',this);return false;" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span data-i18n="dash.nav.insights"></span>
+      </a>
+      <div class="sidebar-section-label" style="margin-top:8px;" data-i18n="creator.nav.strategy">Strategy</div>
+      <a class="sidebar-link" onclick="showSection('future-plan',this);return false;" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <span data-i18n="plan.title"></span>
+      </a>
+      <a class="sidebar-link" onclick="showSection('ad-pricing',this);return false;" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span data-i18n="pricing.title"></span>
+      </a>
+      <div class="sidebar-section-label" style="margin-top:8px;" data-i18n="creator.nav.collab">Collaborations</div>
+      <a class="sidebar-link" onclick="showSection('requests',this);return false;" href="#" id="requestsNavLink">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span data-i18n="nav.requests">Requests</span>
+        <span class="nav-badge" id="requestsBadge" style="display:none;"></span>
+      </a>
+      <div class="sidebar-section-label" style="margin-top:8px;" data-i18n="creator.nav.account">Account</div>
+      <a class="sidebar-link" onclick="showSection('settings',this);return false;" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span data-i18n="settings.title"></span>
+      </a>
+    </nav>
+
+    <!-- Brand nav -->
+    <nav class="sidebar-nav hidden" id="brandNav">
+      <div class="sidebar-section-label" data-i18n="brand.tools.label">Brand Tools</div>
+      <a class="sidebar-link active" onclick="showSection('brand-overview',this);return false;" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span data-i18n="dash.nav.overview"></span>
+      </a>
+      <a class="sidebar-link" onclick="showSection('brand-evaluate',this);return false;" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span data-i18n="brand.nav.find">Find Creators</span>
+      </a>
+      <a class="sidebar-link" onclick="showSection('brand-requests',this);return false;" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span data-i18n="brand.nav.requests">My Requests</span>
+        <span class="nav-badge" id="brandPendingBadge" style="display:none;"></span>
+      </a>
+      <div class="sidebar-section-label" style="margin-top:8px;" data-i18n="brand.nav.account">Account</div>
+      <a class="sidebar-link" onclick="showSection('settings',this);return false;" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span data-i18n="settings.title"></span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="sidebar-link w-full" id="logoutBtnSidebar" style="border:none;background:none;text-align:start;cursor:pointer;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span data-i18n="nav.logout"></span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ========== MAIN ========== -->
+  <main class="dashboard-main">
+
+    <!-- ===== CREATOR: OVERVIEW ===== -->
+    <div id="section-overview">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title"><span data-i18n="dash.welcome"></span>, <span id="dashUserName">...</span> 👋</h1>
+          <p class="dash-sub" data-i18n="dash.sub"></p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <span class="badge badge-purple" id="platformBadge" data-i18n="dash.all.platforms">All Platforms</span>
+          <button class="btn btn-outline btn-sm" onclick="resetDashboard()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.61"/></svg>
+            <span data-i18n="dash.new.upload">New Upload</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Upload section -->
+      <div id="uploadSection">
+        <!-- Mobile upload button (tap-friendly) -->
+        <label for="csvFileMobile" class="upload-mobile-btn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Choose Analytics CSV
+        </label>
+        <input type="file" id="csvFileMobile" accept=".csv" style="display:none;" />
+
+        <!-- Desktop drop zone -->
+        <div class="upload-zone upload-desktop-hint" id="uploadZone">
+          <input type="file" id="csvFile" accept=".csv" style="display:none;" />
+          <div id="processingIndicator" class="hidden" style="pointer-events:none;">
+            <div class="spinner"></div>
+            <p style="color:var(--text-secondary);font-size:0.9rem;margin-top:8px;" data-i18n="loading"></p>
+          </div>
+          <div id="uploadPrompt">
+            <div class="upload-icon">📊</div>
+            <div class="upload-title" data-i18n="dash.upload.title"></div>
+            <p class="upload-sub" data-i18n="dash.upload.desc"></p>
+            <button type="button" class="btn btn-primary" id="chooseFileBtn" style="margin-top:20px;" data-i18n="dash.upload.btn"></button>
+            <div class="upload-sub" style="margin-top:10px;" data-i18n="dash.upload.drop"></div>
+            <button type="button" id="sampleCSV" class="sample-link" onclick="event.stopPropagation()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span data-i18n="dash.upload.sample"></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="card" style="padding:16px 20px;margin-top:0;">
+          <div style="font-size:0.8rem;color:var(--text-muted);font-weight:600;margin-bottom:10px;" data-i18n="csv.columns.label">Expected CSV columns</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <span class="badge badge-blue">date</span><span class="badge badge-purple">followers</span>
+            <span class="badge badge-blue">views</span><span class="badge badge-purple">likes</span>
+            <span class="badge badge-blue">comments</span><span class="badge badge-purple">shares</span>
+            <span class="badge badge-blue">posts</span>
+            <span class="badge badge-purple">revenue <span style="opacity:.5">(opt)</span></span>
+            <span class="badge badge-blue">platform <span style="opacity:.5">(opt)</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard content (shown after upload) -->
+      <div id="dashboardContent" class="hidden">
+        <div class="section-heading"><h2 data-i18n="dash.kpi.heading">Key Performance Indicators</h2><div class="line"></div></div>
+        <div class="kpi-grid">
+          <div class="kpi-card blue">
+            <div class="kpi-label" data-i18n="dash.kpi.engRate"></div>
+            <div class="kpi-value" id="kpiEngRate">—</div>
+            <span class="kpi-change neutral" id="kpiEngRateChange">—</span>
+          </div>
+          <div class="kpi-card purple">
+            <div class="kpi-label" data-i18n="dash.kpi.growth"></div>
+            <div class="kpi-value" id="kpiGrowth">—</div>
+            <span class="kpi-change neutral" id="kpiGrowthChange">—</span>
+          </div>
+          <div class="kpi-card orange">
+            <div class="kpi-label" data-i18n="dash.kpi.volatility"></div>
+            <div class="kpi-value" id="kpiVolatility">—</div>
+            <span class="kpi-change neutral" id="kpiVolatilityChange">—</span>
+          </div>
+          <div class="kpi-card cyan">
+            <div class="kpi-label" data-i18n="dash.kpi.followers"></div>
+            <div class="kpi-value" id="kpiFollowers">—</div>
+          </div>
+          <div class="kpi-card green">
+            <div class="kpi-label" data-i18n="dash.kpi.posts"></div>
+            <div class="kpi-value" id="kpiPosts">—</div>
+          </div>
+          <div class="kpi-card purple">
+            <div class="kpi-label" data-i18n="dash.kpi.revenue"></div>
+            <div class="kpi-value" id="kpiRevenue">—</div>
+          </div>
+          <div class="kpi-card blue">
+            <div class="kpi-label" data-i18n="dash.kpi.engQuality"></div>
+            <div class="kpi-value" id="kpiEngQuality">—</div>
+            <span class="kpi-change neutral" id="kpiEngQualityChange">—</span>
+          </div>
+        </div>
+
+        <!-- Creator Business Health Score -->
+        <div id="healthScoreCard" style="display:none;margin:20px 0;">
+          <div class="health-score-card">
+            <div class="health-score-left">
+              <svg class="health-ring-svg" viewBox="0 0 70 70" width="70" height="70">
+                <circle cx="35" cy="35" r="28" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="7"/>
+                <circle id="healthScoreRing" cx="35" cy="35" r="28" fill="none" stroke="#34d399" stroke-width="7"
+                  stroke-linecap="round" stroke-dasharray="175.93" stroke-dashoffset="175.93"
+                  transform="rotate(-90 35 35)" style="transition:stroke-dashoffset 1s ease,stroke 0.5s;"/>
+                <text x="35" y="40" text-anchor="middle" font-size="14" font-weight="800" fill="currentColor" id="healthScoreValue">—</text>
+              </svg>
+              <div>
+                <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:4px;" data-i18n="health.title">Creator Business Health Score</div>
+                <div style="font-size:1.05rem;font-weight:700;" id="healthScoreStatus">—</div>
+              </div>
+            </div>
+            <div class="health-score-right" id="healthScoreDetail"></div>
+          </div>
+        </div>
+
+        <!-- Mini insights in overview -->
+        <div class="section-heading" style="margin-top:8px;"><h2 data-i18n="dash.insights.title"></h2><div class="line"></div><button class="btn btn-ghost btn-sm" onclick="showSection('insights',null)" data-i18n="dash.view.all">View All →</button></div>
+        <div class="insights-grid" id="miniInsightsGrid" style="margin-bottom:0;"></div>
+      </div>
+    </div>
+
+    <!-- ===== CREATOR: CHARTS ===== -->
+    <div id="section-charts" class="hidden">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title" data-i18n="dash.nav.charts"></h1>
+          <p class="dash-sub" data-i18n="dash.interactive.sub">Interactive analytics — hover, zoom, and filter</p>
+        </div>
+      </div>
+
+      <div id="chartsEmpty" class="empty-section">
+        <div class="empty-section-icon">📊</div>
+        <div class="empty-section-title" data-i18n="dash.no.data">No data yet</div>
+        <p class="empty-section-sub" data-i18n="dash.no.data.charts">Upload a CSV from the Overview tab to see your charts.</p>
+        <button class="btn btn-primary" style="margin-top:20px;" onclick="showSection('overview',null)" data-i18n="dash.go.upload">Go to Upload</button>
+      </div>
+
+      <div id="chartsContent" class="hidden">
+        <!-- Filter bar -->
+        <div class="filter-bar">
+          <span class="filter-label" data-i18n="dash.filter.platform">Platform</span>
+          <div class="filter-pills" id="platformPills">
+          </div>
+          <span class="filter-label" style="margin-left:16px;" data-i18n="dash.filter.period">Period</span>
+          <select class="filter-select" id="dateRangeSelect">
+            <option value="all" data-i18n="dash.filter.all.time">All Time</option>
+            <option value="3" data-i18n="dash.filter.last3">Last 3 Periods</option>
+            <option value="6" data-i18n="dash.filter.last6">Last 6 Periods</option>
+          </select>
+          <button class="reset-zoom-btn" id="resetZoomBtn" data-i18n="dash.reset.zoom">Reset Zoom</button>
+        </div>
+
+        <div class="charts-grid" style="margin-bottom:24px;">
+          <div class="chart-panel">
+            <div class="chart-panel-header">
+              <div><div class="chart-panel-title" data-i18n="dash.chart.followers"></div><div class="chart-panel-sub" data-i18n="dash.chart.trend">Trend over time</div></div>
+              <div style="display:flex;gap:6px;">
+                <button class="filter-pill active" data-chart="chartFollowers" data-type="line" onclick="toggleChartType(this)" data-i18n="dash.chart.line">Line</button>
+                <button class="filter-pill" data-chart="chartFollowers" data-type="bar" onclick="toggleChartType(this)" data-i18n="dash.chart.bar">Bar</button>
+              </div>
+            </div>
+            <div class="chart-canvas-wrap"><canvas id="chartFollowers"></canvas></div>
+          </div>
+          <div class="chart-panel">
+            <div class="chart-panel-header">
+              <div><div class="chart-panel-title" data-i18n="dash.chart.posts"></div><div class="chart-panel-sub" data-i18n="dash.chart.freq.label">Frequency trend</div></div>
+            </div>
+            <div class="chart-canvas-wrap-sm"><canvas id="chartPosts"></canvas></div>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-panel">
+            <div class="chart-panel-header">
+              <div><div class="chart-panel-title" data-i18n="dash.chart.engagement"></div><div class="chart-panel-sub" data-i18n="dash.chart.eng.pct">Engagement Rate %</div></div>
+              <div style="display:flex;gap:6px;">
+                <button class="filter-pill active" data-chart="chartEngagement" data-type="line" onclick="toggleChartType(this)" data-i18n="dash.chart.line">Line</button>
+                <button class="filter-pill" data-chart="chartEngagement" data-type="bar" onclick="toggleChartType(this)" data-i18n="dash.chart.bar">Bar</button>
+              </div>
+            </div>
+            <div class="chart-canvas-wrap"><canvas id="chartEngagement"></canvas></div>
+          </div>
+          <div class="chart-panel" id="revChartPanel">
+            <div class="chart-panel-header">
+              <div><div class="chart-panel-title" data-i18n="dash.chart.revenue"></div><div class="chart-panel-sub" data-i18n="dash.chart.rev.label">Revenue ($)</div></div>
+            </div>
+            <div class="chart-canvas-wrap-sm"><canvas id="chartRevenue"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CREATOR: INSIGHTS ===== -->
+    <div id="section-insights" class="hidden">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title" data-i18n="dash.insights.title"></h1>
+          <p class="dash-sub" data-i18n="dash.insights.sub">Rule-based pattern detection — structural trends, micro signals, and revenue anomalies</p>
+        </div>
+      </div>
+      <div class="insights-grid" id="insightsGrid">
+        <div class="empty-section" style="grid-column:1/-1;">
+          <div class="empty-section-icon">🔍</div>
+          <div class="empty-section-title" data-i18n="dash.no.data">No data yet</div>
+          <p class="empty-section-sub" data-i18n="dash.insights.empty"></p>
+          <button class="btn btn-primary" style="margin-top:20px;" onclick="showSection('overview',null)" data-i18n="dash.go.upload">Go to Upload</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CREATOR: FUTURE PLAN ===== -->
+    <div id="section-future-plan" class="hidden">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title" data-i18n="plan.title"></h1>
+          <p class="dash-sub" data-i18n="dash.plan.sub">Rule-based projections with confidence scoring and scenario simulation</p>
+        </div>
+      </div>
+      <div id="futurePlanEmpty" class="empty-section">
+        <div class="empty-section-icon">🚀</div>
+        <div class="empty-section-title" data-i18n="dash.no.data">No data yet</div>
+        <p class="empty-section-sub" data-i18n="dash.no.data.plan">Upload a CSV from the Overview tab to generate projections.</p>
+        <button class="btn btn-primary" style="margin-top:20px;" onclick="showSection('overview',null)" data-i18n="dash.go.upload">Go to Upload</button>
+      </div>
+      <div id="futurePlanContent" class="hidden">
+        <div class="period-selector">
+          <button class="period-btn active" data-period="30" onclick="selectPeriod(this)" data-i18n="plan.30"></button>
+          <button class="period-btn" data-period="90"  onclick="selectPeriod(this)" data-i18n="plan.90"></button>
+          <button class="period-btn" data-period="180" onclick="selectPeriod(this)" data-i18n="plan.180"></button>
+        </div>
+        <div id="planCards"></div>
+
+        <!-- ===== SCENARIO SIMULATION ===== -->
+        <div id="simulationSection" class="hidden" style="margin-top:12px;">
+          <div class="section-heading" style="margin-bottom:20px;">
+            <h2 style="font-size:1.05rem;" data-i18n="sim.title">Scenario Simulation</h2>
+            <span class="simulation-badge" data-i18n="sim.badge">What-If Analysis</span>
+            <div class="line"></div>
+          </div>
+          <div class="card">
+            <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:20px;line-height:1.6;" data-i18n="sim.desc">
+              Simulate how changes to posting frequency or engagement would affect your 30-day projection. Results are mathematically derived — no black-box AI.
+            </p>
+            <div class="sim-controls">
+              <div class="sim-control-group">
+                <label class="sim-label-text" data-i18n="sim.posting.label">Posting Frequency Change</label>
+                <select id="simPostingDelta" class="filter-select">
+                  <option value="-20" data-i18n="sim.post.reduce20">Reduce by 20%</option>
+                  <option value="-10" data-i18n="sim.post.reduce10">Reduce by 10%</option>
+                  <option value="0" selected data-i18n="sim.post.baseline">No Change (baseline)</option>
+                  <option value="10" data-i18n="sim.post.increase10">Increase by 10%</option>
+                  <option value="20" data-i18n="sim.post.increase20">Increase by 20%</option>
+                  <option value="30" data-i18n="sim.post.increase30">Increase by 30%</option>
+                </select>
+              </div>
+              <div class="sim-control-group">
+                <label class="sim-label-text" data-i18n="sim.eng.label">Engagement Rate Change</label>
+                <select id="simEngDelta" class="filter-select">
+                  <option value="-2" data-i18n="sim.eng.decrease2">Decrease by 2%</option>
+                  <option value="-1" data-i18n="sim.eng.decrease1">Decrease by 1%</option>
+                  <option value="0" selected data-i18n="sim.eng.baseline">No Change (baseline)</option>
+                  <option value="1" data-i18n="sim.eng.increase1">Increase by 1%</option>
+                  <option value="2" data-i18n="sim.eng.increase2">Increase by 2%</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" onclick="runSimulation()" style="white-space:nowrap;" data-i18n="sim.run.btn">
+                Run Simulation
+              </button>
+            </div>
+            <div id="simulationResult" class="sim-result-area">
+              <div class="sim-placeholder" data-i18n="sim.placeholder">Adjust parameters above and click Run Simulation to see projected impact.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CREATOR: AD PRICING ===== -->
+    <div id="section-ad-pricing" class="hidden">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title" data-i18n="pricing.title"></h1>
+          <p class="dash-sub" data-i18n="dash.pricing.sub">Multi-factor model: CPM × Engagement × Growth × Stability — with full breakdown</p>
+        </div>
+      </div>
+      <div id="adPricingEmpty" class="empty-section">
+        <div class="empty-section-icon">💰</div>
+        <div class="empty-section-title" data-i18n="dash.no.data">No data yet</div>
+        <p class="empty-section-sub" data-i18n="pricing.empty"></p>
+        <button class="btn btn-primary" style="margin-top:20px;" onclick="showSection('overview',null)" data-i18n="dash.go.upload">Go to Upload</button>
+      </div>
+      <div id="adPricingContent" class="hidden"></div>
+    </div>
+
+    <!-- ===== SETTINGS ===== -->
+    <div id="section-settings" class="hidden">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title" data-i18n="settings.title"></h1>
+          <p class="dash-sub" data-i18n="dash.settings.sub">Manage your account preferences</p>
+        </div>
+      </div>
+      <div class="settings-grid">
+        <!-- Profile card -->
+        <div class="settings-card">
+          <div class="settings-card-title">👤 <span data-i18n="settings.profile"></span></div>
+          <form id="settingsForm">
+            <div class="form-group">
+              <label class="form-label" data-i18n="settings.name"></label>
+              <input class="form-input" type="text" id="settingName" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="settings.email"></label>
+              <input class="form-input" type="email" id="settingEmail" disabled style="opacity:0.6;cursor:not-allowed;" />
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;" data-i18n="settings.email.note">Email changes require re-authentication for security.</div>
+            </div>
+            <button type="submit" class="btn btn-primary w-full" data-i18n="settings.save"></button>
+          </form>
+        </div>
+
+        <!-- Content Types card (creator only) -->
+        <div class="settings-card" id="contentTypeSettingsCard">
+          <div class="settings-card-title">🎯 <span data-i18n="settings.content.type"></span></div>
+          <p style="font-size:0.83rem;color:var(--text-secondary);margin-bottom:14px;" data-i18n="settings.content.type.hint"></p>
+          <div class="content-type-chips" id="settingsContentChips">
+            <button type="button" class="content-chip" data-type="entertainment" data-i18n="ctype.entertainment">Entertainment</button>
+            <button type="button" class="content-chip" data-type="makeup"        data-i18n="ctype.makeup">Makeup & Beauty</button>
+            <button type="button" class="content-chip" data-type="educational"   data-i18n="ctype.educational">Educational</button>
+            <button type="button" class="content-chip" data-type="fitness"       data-i18n="ctype.fitness">Fitness</button>
+            <button type="button" class="content-chip" data-type="gaming"        data-i18n="ctype.gaming">Gaming</button>
+            <button type="button" class="content-chip" data-type="food"          data-i18n="ctype.food">Food</button>
+            <button type="button" class="content-chip" data-type="travel"        data-i18n="ctype.travel">Travel</button>
+            <button type="button" class="content-chip" data-type="tech"          data-i18n="ctype.tech">Tech</button>
+            <button type="button" class="content-chip" data-type="other"         data-i18n="ctype.other">Other</button>
+          </div>
+          <button class="btn btn-primary w-full" id="saveContentTypesBtn" style="margin-top:16px;" data-i18n="settings.content.type.save"></button>
+        </div>
+
+        <!-- Security card -->
+        <div class="settings-card">
+          <div class="settings-card-title">🔒 <span data-i18n="settings.password"></span></div>
+          <p style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:20px;line-height:1.6;" data-i18n="settings.reset.note">
+            We'll send a password reset link to your registered email address.
+          </p>
+          <button class="btn btn-outline w-full" id="resetPasswordBtn" data-i18n="settings.reset.pw"></button>
+        </div>
+
+        <!-- Notifications card -->
+        <div class="settings-card">
+          <div class="settings-card-title">🔔 <span data-i18n="settings.notifications"></span></div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-title" data-i18n="settings.notif.email"></div>
+              <div class="toggle-desc" data-i18n="settings.notif.email.desc"></div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="notifEmail" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-title" data-i18n="settings.notif.marketing"></div>
+              <div class="toggle-desc" data-i18n="settings.notif.marketing.desc"></div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="notifMarketing" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Appearance card -->
+        <div class="settings-card">
+          <div class="settings-card-title">🎨 <span data-i18n="settings.theme"></span></div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-title" data-i18n="settings.theme.dark"></div>
+              <div class="toggle-desc" data-i18n="settings.theme.dark.desc"></div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="themeToggleSettings" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== BRAND: OVERVIEW ===== -->
+    <div id="section-brand-overview" class="hidden">
+      <div class="brand-header-banner">
+        <div class="brand-header-icon">🏢</div>
+        <div>
+          <h1 style="font-size:1.4rem;font-weight:800;margin-bottom:4px;" data-i18n="brand.welcome"></h1>
+          <p style="color:var(--text-secondary);font-size:0.9rem;" data-i18n="brand.overview.sub">Search for creators registered on this platform and reach out directly for collaboration opportunities.</p>
+        </div>
+      </div>
+
+      <!-- What you get cards -->
+      <div class="section-heading" style="margin-bottom:20px;">
+        <h2 style="font-size:1rem;" data-i18n="brand.overview.what">What You Can Do</h2>
+        <div class="line"></div>
+      </div>
+      <div class="kpi-grid" style="margin-bottom:32px;">
+        <div class="card" style="padding:22px;">
+          <div style="font-size:1.6rem;margin-bottom:10px;">🔍</div>
+          <div style="font-weight:700;font-size:0.95rem;margin-bottom:6px;" data-i18n="brand.card.search.title">Search Creators</div>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.55;" data-i18n="brand.card.search.desc">Search registered creators by name. Results include their contact email for direct outreach.</p>
+        </div>
+        <div class="card" style="padding:22px;">
+          <div style="font-size:1.6rem;margin-bottom:10px;">📧</div>
+          <div style="font-weight:700;font-size:0.95rem;margin-bottom:6px;" data-i18n="brand.card.contact.title">Contact Directly</div>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.55;" data-i18n="brand.card.contact.desc">Send a collaboration request email directly to the creator with a single click.</p>
+        </div>
+        <div class="card" style="padding:22px;">
+          <div style="font-size:1.6rem;margin-bottom:10px;">✅</div>
+          <div style="font-weight:700;font-size:0.95rem;margin-bottom:6px;" data-i18n="brand.card.verified.title">Verified Creators</div>
+          <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.55;" data-i18n="brand.card.verified.desc">Only creators registered on this platform appear in search results — no fake or unverified profiles.</p>
+        </div>
+      </div>
+
+      <div style="text-align:center;padding:20px 0;">
+        <button class="btn btn-primary" style="padding:14px 40px;font-size:1rem;" onclick="showSection('brand-evaluate',document.querySelector('#brandNav .sidebar-link:nth-child(2)'))">
+          <span data-i18n="brand.find.btn">Find Creators</span>
+        </button>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-top:10px;" data-i18n="brand.find.hint">Search by creator name to find and contact them</p>
+      </div>
+    </div>
+
+    <!-- ===== BRAND: FIND CREATORS ===== -->
+    <div id="section-brand-evaluate" class="hidden">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title" data-i18n="brand.find.title">Find Creators</h1>
+          <p class="dash-sub" data-i18n="brand.find.sub">Search registered creators by name and send a collaboration request</p>
+        </div>
+      </div>
+
+      <div class="card" style="padding:24px;margin-bottom:24px;">
+        <div class="creator-search-bar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="creatorSearchInput" class="form-input creator-search-input" placeholder="Type a creator name..." autocomplete="off" data-i18n-attr="placeholder" data-i18n="brand.search.placeholder" />
+          <select id="contentTypeFilter" class="form-input" style="max-width:180px;flex-shrink:0;">
+            <option value="" data-i18n="brand.filter.all">All Types</option>
+            <option value="entertainment" data-i18n="ctype.entertainment">Entertainment</option>
+            <option value="makeup"        data-i18n="ctype.makeup">Makeup & Beauty</option>
+            <option value="educational"   data-i18n="ctype.educational">Educational</option>
+            <option value="fitness"       data-i18n="ctype.fitness">Fitness</option>
+            <option value="gaming"        data-i18n="ctype.gaming">Gaming</option>
+            <option value="food"          data-i18n="ctype.food">Food</option>
+            <option value="travel"        data-i18n="ctype.travel">Travel</option>
+            <option value="tech"          data-i18n="ctype.tech">Tech</option>
+            <option value="other"         data-i18n="ctype.other">Other</option>
+          </select>
+          <button class="btn btn-primary" onclick="searchCreators()" style="white-space:nowrap;" data-i18n="brand.search.btn">Search</button>
+        </div>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:10px;" data-i18n="brand.search.hint">Only creators registered on this platform will appear in results.</p>
+      </div>
+
+      <div id="creatorSearchResults"></div>
+    </div>
+
+    <!-- ── My Requests Section (brand) ── -->
+    <div id="section-brand-requests" class="hidden">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title" data-i18n="brand.requests.title">My Sent Requests</h1>
+          <p class="dash-sub" data-i18n="brand.requests.sub">Track the status of your collaboration requests</p>
+        </div>
+      </div>
+      <div id="brandRequestsList"></div>
+    </div>
+
+    <!-- ── Requests Section (creator) ── -->
+    <div id="section-requests" class="hidden">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title" data-i18n="requests.title">Collaboration Requests</h1>
+          <p class="dash-sub" data-i18n="requests.sub">Review and respond to brand collaboration requests</p>
+        </div>
+      </div>
+      <div id="requestsList"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container"></div>
+
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<!-- Collaboration Request Modal (structured form) -->
+<div id="collabModal" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:540px;">
+    <div class="modal-header">
+      <h3 data-i18n="brand.modal.title">Send Collaboration Request</h3>
+      <button class="modal-close" onclick="document.getElementById('collabModal').classList.add('hidden')">✕</button>
+    </div>
+    <div class="modal-body" style="max-height:70vh;overflow-y:auto;">
+      <!-- To -->
+      <div class="form-group">
+        <label class="form-label" data-i18n="brand.modal.to">To</label>
+        <input class="form-input" id="modalCreatorName" disabled style="opacity:0.7;" />
+      </div>
+      <!-- Brand name -->
+      <div class="form-group">
+        <label class="form-label" data-i18n="brand.modal.company">Your Brand / Company</label>
+        <input class="form-input" id="modalBrandName" data-i18n-attr="placeholder" data-i18n="brand.modal.company.ph" placeholder="e.g. Acme Brand" />
+      </div>
+      <!-- Campaign name -->
+      <div class="form-group">
+        <label class="form-label" data-i18n="brand.modal.campaign">Campaign Name</label>
+        <input class="form-input" id="modalCampaignName" data-i18n-attr="placeholder" data-i18n="brand.modal.campaign.ph" placeholder="e.g. Summer Collection 2025" />
+      </div>
+      <!-- Row: format + budget -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group" style="margin:0;">
+          <label class="form-label" data-i18n="brand.modal.format">Content Format</label>
+          <select class="form-input" id="modalFormat">
+            <option value="Post / Photo"      data-i18n="modal.format.post">Post / Photo</option>
+            <option value="Reel / Short Video" data-i18n="modal.format.reel" selected>Reel / Short Video</option>
+            <option value="Long Video"         data-i18n="modal.format.video">Long Video</option>
+            <option value="Story"              data-i18n="modal.format.story">Story</option>
+            <option value="Multiple Formats"   data-i18n="modal.format.multi">Multiple Formats</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label class="form-label" data-i18n="brand.modal.budget">Budget Range</label>
+          <select class="form-input" id="modalBudget">
+            <option value="Under $500"   data-i18n="modal.budget.1">Under $500</option>
+            <option value="$500 – $2K"   data-i18n="modal.budget.2">$500 – $2K</option>
+            <option value="$2K – $10K"   data-i18n="modal.budget.3">$2K – $10K</option>
+            <option value="$10K+"        data-i18n="modal.budget.4">$10K+</option>
+            <option value="Negotiable"   data-i18n="modal.budget.5" selected>Negotiable</option>
+          </select>
+        </div>
+      </div>
+      <!-- Timeline -->
+      <div class="form-group">
+        <label class="form-label" data-i18n="brand.modal.timeline">Timeline</label>
+        <select class="form-input" id="modalTimeline">
+          <option value="1 Week"    data-i18n="modal.timeline.1">1 Week</option>
+          <option value="2 Weeks"   data-i18n="modal.timeline.2">2 Weeks</option>
+          <option value="1 Month"   data-i18n="modal.timeline.3">1 Month</option>
+          <option value="Flexible"  data-i18n="modal.timeline.4" selected>Flexible</option>
+        </select>
+      </div>
+      <!-- Key message -->
+      <div class="form-group">
+        <label class="form-label" data-i18n="brand.modal.keymsg">Key Message</label>
+        <input class="form-input" id="modalKeyMessage" data-i18n-attr="placeholder" data-i18n="brand.modal.keymsg.ph" placeholder="What should the audience take away from this content?" />
+      </div>
+      <!-- Requirements -->
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label" data-i18n="brand.modal.req">Special Requirements <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+        <textarea class="form-input" id="modalRequirements" rows="2" data-i18n-attr="placeholder" data-i18n="brand.modal.req.ph" placeholder="e.g. Must show product unboxing, include discount code..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="document.getElementById('collabModal').classList.add('hidden')" data-i18n="brand.modal.cancel">Cancel</button>
+      <button class="btn btn-primary" id="modalSendBtn" onclick="window._sendCollabRequest()" data-i18n="brand.modal.send">Send Request</button>
+    </div>
+  </div>
+</div>
+
+<!-- Chatbot FAB -->
+<button class="chat-fab hidden" id="chatFab" title="Data Assistant">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+
+<!-- Chatbot Panel -->
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <div class="chat-header-info">
+      <div class="chat-avatar">🤖</div>
+      <span class="chat-title" data-i18n="chat.title">Data Assistant</span>
+    </div>
+    <button class="chat-close" id="chatClose">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <form class="chat-input-row" id="chatForm" onsubmit="return false;">
+    <input type="text" class="chat-input" id="chatInput" autocomplete="off"
+      placeholder="Ask about your data..."
+      data-i18n="chat.placeholder" data-i18n-attr="placeholder" />
+    <button type="submit" class="chat-send">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </form>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<!-- Chart.js + zoom plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+
+<!-- App scripts -->
+<script src="js/firebase.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dashboard.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  theme.init();
+  i18n.init();
+
+  // Show hamburger on mobile
+  if (window.innerWidth <= 768) {
+    const mt = document.getElementById('menuToggle');
+    if (mt) mt.style.display = 'flex';
+  }
+
+  // Mobile sidebar overlay close
+  const overlay = document.getElementById('sidebarOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', () => {
+      document.getElementById('sidebar').classList.remove('open');
+      overlay.classList.remove('show');
+    });
+  }
+
+  // Theme toggle in settings
+  const themeSettingsToggle = document.getElementById('themeToggleSettings');
+  if (themeSettingsToggle) {
+    themeSettingsToggle.checked = theme.current === 'dark';
+    themeSettingsToggle.addEventListener('change', () => {
+      theme.toggle();
+      themeSettingsToggle.checked = theme.current === 'dark';
+    });
+  }
+
+  // Logout buttons
+  ['logoutBtn','logoutBtnSidebar'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.addEventListener('click', async () => {
+      await auth.signOut();
+      window.location.href = 'index.html';
+    });
+  });
+
+  // Update user name after auth
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      const ne = document.getElementById('dashUserName');
+      if (ne) ne.textContent = (user.displayName || user.email.split('@')[0]);
+    }
+  });
+});
+
+/* Section navigation */
+function showSection(id, linkEl) {
+  document.querySelectorAll('[id^="section-"]').forEach(s => s.classList.add('hidden'));
+  const target = document.getElementById('section-' + id);
+  if (target) target.classList.remove('hidden');
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  if (linkEl) linkEl.classList.add('active');
+  // Section-specific render
+  if (typeof window.onSectionShow === 'function') window.onSectionShow(id);
+  // Close mobile sidebar
+  if (window.innerWidth <= 768) {
+    document.getElementById('sidebar').classList.remove('open');
+    const ov = document.getElementById('sidebarOverlay');
+    if (ov) ov.classList.remove('show');
+  }
+}
+
+/* Period selector for future plan */
+function selectPeriod(btn) {
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const period = parseInt(btn.dataset.period);
+  if (typeof window.renderFuturePlanForPeriod === 'function') window.renderFuturePlanForPeriod(period);
+}
+
+/* Chart type toggle */
+function toggleChartType(btn) {
+  const chartId = btn.dataset.chart;
+  const type    = btn.dataset.type;
+  btn.closest('.chart-panel-header').querySelectorAll('[data-chart]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (typeof window.setChartType === 'function') window.setChartType(chartId, type);
+}
+
+/* Reset dashboard to upload state */
+function resetDashboard() {
+  document.getElementById('uploadSection').classList.remove('hidden');
+  document.getElementById('dashboardContent').classList.add('hidden');
+  const fi = document.getElementById('csvFile');
+  if (fi) fi.value = '';
+  const fim = document.getElementById('csvFileMobile');
+  if (fim) fim.value = '';
+  if (typeof window.clearData === 'function') window.clearData();
+}
+</script>
+</body>
+</html>

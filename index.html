@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Content Manager — AI Analytics for Creators</title>
+  <meta name="description" content="Turn raw analytics into unstoppable growth. KPI dashboards, hidden insights, and revenue forecasting for MENA creators." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <style>
+    /* Page-specific additions */
+    .how-section { background: var(--bg-secondary); }
+    .features-section { background: var(--bg-base); }
+  </style>
+</head>
+<body>
+
+<!-- Page Loader -->
+<div class="page-loader" id="pageLoader">
+  <div class="loader-logo">Smart Content Manager</div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+</div>
+
+<!-- ============================================================
+     NAVBAR
+     ============================================================ -->
+<nav class="navbar">
+  <div class="container">
+    <a href="index.html" class="nav-brand">
+      <!-- Logo SVG -->
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="8" fill="url(#lg)"/>
+        <path d="M8 20l5-6 4 4 3-5 4 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="10" r="3" fill="white" opacity="0.9"/>
+        <defs>
+          <linearGradient id="lg" x1="0" y1="0" x2="32" y2="32">
+            <stop stop-color="#8B5CF6"/>
+            <stop offset="1" stop-color="#00C6FF"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span>SCM</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="#features" data-i18n="nav.features"></a>
+      <a href="#how"      data-i18n="nav.how"></a>
+    </div>
+
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme"></button>
+      <button class="lang-btn" id="langBtn" title="Switch language">عر</button>
+      <a href="login.html"    class="btn btn-ghost btn-sm" id="navLogin"    data-i18n="nav.login"></a>
+      <a href="register.html" class="btn btn-primary btn-sm" id="navRegister" data-i18n="nav.register"></a>
+      <a href="dashboard.html" class="btn btn-primary btn-sm hidden" id="navDash"    data-i18n="nav.dashboard"></a>
+      <button class="btn btn-ghost btn-sm hidden" id="navLogout" data-i18n="nav.logout"></button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+
+      <!-- Left: text -->
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="dot"></span>
+          <span data-i18n="hero.badge"></span>
+        </div>
+
+        <h1 class="hero-title">
+          <span data-i18n="hero.title1"></span><br/>
+          <span class="gradient-text" data-i18n="hero.title2"></span>
+        </h1>
+
+        <p class="hero-desc" data-i18n="hero.desc"></p>
+
+        <div class="hero-cta">
+          <a href="register.html" class="btn btn-primary btn-lg" data-i18n="hero.cta.primary"></a>
+          <a href="#how" class="btn btn-outline btn-lg" data-i18n="hero.cta.secondary"></a>
+        </div>
+
+        <div class="hero-stats">
+          <div>
+            <div class="hero-stat-num" data-i18n="hero.stat1.num"></div>
+            <div class="hero-stat-label" data-i18n="hero.stat1.label"></div>
+          </div>
+          <div>
+            <div class="hero-stat-num" data-i18n="hero.stat2.num"></div>
+            <div class="hero-stat-label" data-i18n="hero.stat2.label"></div>
+          </div>
+          <div>
+            <div class="hero-stat-num" data-i18n="hero.stat3.num"></div>
+            <div class="hero-stat-label" data-i18n="hero.stat3.label"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: AI Illustration -->
+      <div class="hero-visual">
+        <svg viewBox="0 0 480 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Background glow circles -->
+          <circle cx="240" cy="230" r="180" fill="url(#bgGrad)" opacity="0.15"/>
+          <circle cx="240" cy="230" r="130" fill="url(#bgGrad2)" opacity="0.1"/>
+
+          <!-- Robot body -->
+          <rect x="155" y="180" width="170" height="140" rx="24" fill="url(#bodyGrad)" stroke="url(#strokeGrad)" stroke-width="1.5"/>
+
+          <!-- Robot head -->
+          <rect x="175" y="110" width="130" height="90" rx="20" fill="url(#headGrad)" stroke="url(#strokeGrad)" stroke-width="1.5"/>
+
+          <!-- Eyes -->
+          <rect x="193" y="132" width="36" height="22" rx="8" fill="#0A0F1E"/>
+          <rect x="251" y="132" width="36" height="22" rx="8" fill="#0A0F1E"/>
+          <rect x="198" y="136" width="26" height="14" rx="5" fill="url(#eyeGrad)"/>
+          <rect x="256" y="136" width="26" height="14" rx="5" fill="url(#eyeGrad)"/>
+          <!-- Eye glow -->
+          <rect x="200" y="138" width="10" height="6" rx="3" fill="#00C6FF" opacity="0.8"/>
+          <rect x="258" y="138" width="10" height="6" rx="3" fill="#00C6FF" opacity="0.8"/>
+
+          <!-- Mouth / speaker -->
+          <rect x="205" y="168" width="70" height="10" rx="5" fill="#0A0F1E"/>
+          <rect x="210" y="170" width="60" height="6" rx="3" fill="url(#mouthGrad)"/>
+
+          <!-- Antenna -->
+          <line x1="240" y1="110" x2="240" y2="80" stroke="url(#strokeGrad)" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="240" cy="74" r="7" fill="url(#antennaGrad)"/>
+          <circle cx="240" cy="74" r="4" fill="#00C6FF" opacity="0.9">
+            <animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.9;0.4;0.9" dur="2s" repeatCount="indefinite"/>
+          </circle>
+
+          <!-- Screen on chest -->
+          <rect x="170" y="200" width="140" height="80" rx="12" fill="#060B17" stroke="rgba(0,198,255,0.25)" stroke-width="1"/>
+
+          <!-- Mini chart on screen -->
+          <polyline points="180,268 196,254 212,260 228,240 244,248 260,234 276,242 292,228" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <polyline points="180,268 196,254 212,260 228,240 244,248 260,234 276,242 292,228 292,268 180,268" fill="url(#chartFill)" opacity="0.35"/>
+
+          <!-- Screen graph bars (smaller below) -->
+          <rect x="184" y="256" width="10" height="12" rx="2" fill="#00C6FF" opacity="0.6"/>
+          <rect x="200" y="250" width="10" height="18" rx="2" fill="#8B5CF6" opacity="0.7"/>
+          <rect x="216" y="244" width="10" height="24" rx="2" fill="#00C6FF" opacity="0.6"/>
+          <rect x="232" y="253" width="10" height="15" rx="2" fill="#34D399" opacity="0.7"/>
+
+          <!-- Arms -->
+          <rect x="100" y="195" width="55" height="22" rx="11" fill="url(#bodyGrad)" stroke="url(#strokeGrad)" stroke-width="1"/>
+          <rect x="325" y="195" width="55" height="22" rx="11" fill="url(#bodyGrad)" stroke="url(#strokeGrad)" stroke-width="1"/>
+
+          <!-- Hands -->
+          <circle cx="104" cy="206" r="12" fill="url(#headGrad)" stroke="url(#strokeGrad)" stroke-width="1"/>
+          <circle cx="376" cy="206" r="12" fill="url(#headGrad)" stroke="url(#strokeGrad)" stroke-width="1"/>
+
+          <!-- Floating hologram cards -->
+          <!-- Card 1 (top-left) -->
+          <g opacity="0.9" transform="translate(40, 90)">
+            <rect width="90" height="54" rx="10" fill="rgba(139,92,246,0.15)" stroke="rgba(139,92,246,0.4)" stroke-width="1"/>
+            <text x="8" y="18" fill="#8B5CF6" font-size="7" font-weight="700" font-family="Inter, sans-serif">ENGAGEMENT</text>
+            <text x="8" y="34" fill="#EEF2FF" font-size="14" font-weight="800" font-family="Inter, sans-serif">4.8%</text>
+            <text x="8" y="46" fill="#34D399" font-size="8" font-family="Inter, sans-serif">↑ +0.6%</text>
+            <animateTransform attributeName="transform" type="translate" values="40,90;40,82;40,90" dur="4s" repeatCount="indefinite"/>
+          </g>
+
+          <!-- Card 2 (top-right) -->
+          <g opacity="0.9" transform="translate(346, 80)">
+            <rect width="90" height="54" rx="10" fill="rgba(0,198,255,0.12)" stroke="rgba(0,198,255,0.35)" stroke-width="1"/>
+            <text x="8" y="18" fill="#00C6FF" font-size="7" font-weight="700" font-family="Inter, sans-serif">FOLLOWERS</text>
+            <text x="8" y="34" fill="#EEF2FF" font-size="14" font-weight="800" font-family="Inter, sans-serif">125K</text>
+            <text x="8" y="46" fill="#34D399" font-size="8" font-family="Inter, sans-serif">↑ +12.3%</text>
+            <animateTransform attributeName="transform" type="translate" values="346,80;346,90;346,80" dur="5s" repeatCount="indefinite"/>
+          </g>
+
+          <!-- Card 3 (bottom-left) -->
+          <g opacity="0.85" transform="translate(28, 310)">
+            <rect width="95" height="54" rx="10" fill="rgba(52,211,153,0.1)" stroke="rgba(52,211,153,0.35)" stroke-width="1"/>
+            <text x="8" y="18" fill="#34D399" font-size="7" font-weight="700" font-family="Inter, sans-serif">REVENUE</text>
+            <text x="8" y="34" fill="#EEF2FF" font-size="14" font-weight="800" font-family="Inter, sans-serif">$4,200</text>
+            <text x="8" y="46" fill="#34D399" font-size="8" font-family="Inter, sans-serif">↑ +18%</text>
+            <animateTransform attributeName="transform" type="translate" values="28,310;28,320;28,310" dur="6s" repeatCount="indefinite"/>
+          </g>
+
+          <!-- Card 4 (bottom-right) -->
+          <g opacity="0.85" transform="translate(350, 300)">
+            <rect width="96" height="54" rx="10" fill="rgba(251,146,60,0.1)" stroke="rgba(251,146,60,0.35)" stroke-width="1"/>
+            <text x="8" y="18" fill="#FB923C" font-size="7" font-weight="700" font-family="Inter, sans-serif">RISK SCORE</text>
+            <text x="8" y="34" fill="#EEF2FF" font-size="14" font-weight="800" font-family="Inter, sans-serif">Low</text>
+            <text x="8" y="46" fill="#34D399" font-size="8" font-family="Inter, sans-serif">✓ Stable</text>
+            <animateTransform attributeName="transform" type="translate" values="350,300;350,310;350,300" dur="4.5s" repeatCount="indefinite"/>
+          </g>
+
+          <!-- Connection lines from robot to cards -->
+          <line x1="155" y1="160" x2="130" y2="117" stroke="rgba(139,92,246,0.25)" stroke-width="1" stroke-dasharray="4 4"/>
+          <line x1="305" y1="160" x2="346" y2="107" stroke="rgba(0,198,255,0.25)" stroke-width="1" stroke-dasharray="4 4"/>
+          <line x1="155" y1="290" x2="123" y2="337" stroke="rgba(52,211,153,0.25)" stroke-width="1" stroke-dasharray="4 4"/>
+          <line x1="325" y1="290" x2="350" y2="327" stroke="rgba(251,146,60,0.2)" stroke-width="1" stroke-dasharray="4 4"/>
+
+          <!-- Particle dots -->
+          <circle cx="60"  cy="200" r="2.5" fill="#8B5CF6" opacity="0.6"><animate attributeName="opacity" values="0.6;0.1;0.6" dur="3s" repeatCount="indefinite"/></circle>
+          <circle cx="420" cy="160" r="2"   fill="#00C6FF" opacity="0.5"><animate attributeName="opacity" values="0.5;0.1;0.5" dur="2.5s" repeatCount="indefinite"/></circle>
+          <circle cx="80"  cy="390" r="3"   fill="#34D399" opacity="0.4"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="4s" repeatCount="indefinite"/></circle>
+          <circle cx="400" cy="380" r="2"   fill="#FB923C" opacity="0.5"><animate attributeName="opacity" values="0.5;0.2;0.5" dur="3.5s" repeatCount="indefinite"/></circle>
+          <circle cx="240" cy="420" r="2.5" fill="#8B5CF6" opacity="0.4"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.8s" repeatCount="indefinite"/></circle>
+
+          <!-- Defs -->
+          <defs>
+            <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#8B5CF6"/>
+              <stop offset="100%" stop-color="#00C6FF"/>
+            </linearGradient>
+            <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00C6FF"/>
+              <stop offset="100%" stop-color="#8B5CF6"/>
+            </linearGradient>
+            <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1A2540"/>
+              <stop offset="100%" stop-color="#0F1629"/>
+            </linearGradient>
+            <linearGradient id="headGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1E2D50"/>
+              <stop offset="100%" stop-color="#141C33"/>
+            </linearGradient>
+            <linearGradient id="strokeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#00C6FF" stop-opacity="0.5"/>
+            </linearGradient>
+            <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#8B5CF6"/>
+              <stop offset="100%" stop-color="#00C6FF"/>
+            </linearGradient>
+            <linearGradient id="mouthGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00C6FF"/>
+              <stop offset="100%" stop-color="#8B5CF6"/>
+            </linearGradient>
+            <linearGradient id="antennaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#8B5CF6"/>
+              <stop offset="100%" stop-color="#00C6FF"/>
+            </linearGradient>
+            <linearGradient id="chartFill" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#8B5CF6"/>
+              <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+    </div><!-- /hero-inner -->
+  </div><!-- /container -->
+</section><!-- /hero -->
+
+<!-- ============================================================
+     FEATURES
+     ============================================================ -->
+<!-- ============================================================
+     HOW IT WORKS
+     ============================================================ -->
+<section class="section how-section" id="how">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-tag" data-i18n="how.tag"></div>
+      <h2 class="section-title" data-i18n="how.title"></h2>
+      <p class="section-sub" data-i18n="how.sub"></p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3 class="step-title" data-i18n="step1.title"></h3>
+        <p class="step-desc"  data-i18n="step1.desc"></p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3 class="step-title" data-i18n="step2.title"></h3>
+        <p class="step-desc"  data-i18n="step2.desc"></p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3 class="step-title" data-i18n="step3.title"></h3>
+        <p class="step-desc"  data-i18n="step3.desc"></p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3 class="step-title" data-i18n="step4.title"></h3>
+        <p class="step-desc"  data-i18n="step4.desc"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CTA BANNER
+     ============================================================ -->
+<section class="section" style="background: var(--bg-base);">
+  <div class="container">
+    <div class="cta-banner">
+      <h2 class="section-title" data-i18n="cta.title"></h2>
+      <p class="section-sub" data-i18n="cta.sub"></p>
+      <a href="register.html" class="btn btn-primary btn-lg" data-i18n="cta.btn"></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <span data-i18n="footer.copy"></span>
+      <div class="footer-links">
+        <a href="#" data-i18n="footer.privacy"></a>
+        <a href="#" data-i18n="footer.terms"></a>
+        <a href="#" data-i18n="footer.contact"></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast container -->
+<div class="toast-container"></div>
+
+<!-- ============================================================
+     Firebase SDKs (compat)
+     ============================================================ -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<!-- App scripts -->
+<script src="js/firebase.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/auth.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    theme.init();
+    i18n.init();
+  });
+</script>
+</body>
+</html>

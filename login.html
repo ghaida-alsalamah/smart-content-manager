@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Log In — Smart Content Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<!-- Page Loader -->
+<div class="page-loader" id="pageLoader">
+  <div class="loader-logo">Smart Content Manager</div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="container">
+    <a href="index.html" class="nav-brand">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="8" fill="url(#lg2)"/>
+        <path d="M8 20l5-6 4 4 3-5 4 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="10" r="3" fill="white" opacity="0.9"/>
+        <defs>
+          <linearGradient id="lg2" x1="0" y1="0" x2="32" y2="32">
+            <stop stop-color="#8B5CF6"/>
+            <stop offset="1" stop-color="#00C6FF"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span>SCM</span>
+    </a>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme"></button>
+      <button class="lang-btn" id="langBtn" title="Switch language">عر</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Auth Page -->
+<div class="auth-page">
+  <div class="auth-card">
+    <!-- Logo -->
+    <div class="auth-logo">
+      <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="url(#lg3)"/>
+        <path d="M8 20l5-6 4 4 3-5 4 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="10" r="3" fill="white" opacity="0.9"/>
+        <defs>
+          <linearGradient id="lg3" x1="0" y1="0" x2="32" y2="32">
+            <stop stop-color="#8B5CF6"/>
+            <stop offset="1" stop-color="#00C6FF"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="auth-logo-text">Smart Content Manager</span>
+    </div>
+
+    <h1 class="auth-title" data-i18n="login.title"></h1>
+    <p class="auth-sub">
+      <span data-i18n="login.sub"></span><a href="register.html" data-i18n="login.sub.link"></a>
+    </p>
+
+    <!-- Alert -->
+    <div class="alert" id="loginAlert" role="alert"></div>
+
+    <!-- Form -->
+    <form id="loginForm" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="loginEmail" data-i18n="login.email"></label>
+        <input
+          class="form-input"
+          type="email"
+          id="loginEmail"
+          name="email"
+          autocomplete="email"
+          data-i18n-attr="placeholder"
+          data-i18n="login.email"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="loginPassword" data-i18n="login.password"></label>
+        <div style="position:relative;">
+          <input
+            class="form-input"
+            type="password"
+            id="loginPassword"
+            name="password"
+            autocomplete="current-password"
+            data-i18n-attr="placeholder"
+            data-i18n="login.password"
+            required
+            style="padding-right: 48px;"
+          />
+          <button type="button" id="togglePass" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;" title="Show password">
+            👁
+          </button>
+        </div>
+        <div style="text-align:right;margin-top:6px;">
+          <a href="#" style="font-size:0.8rem;color:var(--accent-purple);" data-i18n="login.forgot"></a>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-full" id="loginBtn" style="margin-top:8px;" data-i18n="login.btn"></button>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script src="js/firebase.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/auth.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    theme.init();
+    i18n.init();
+
+    // Password toggle
+    const passInput = document.getElementById('loginPassword');
+    const toggleBtn = document.getElementById('togglePass');
+    if (toggleBtn && passInput) {
+      toggleBtn.addEventListener('click', () => {
+        passInput.type = passInput.type === 'password' ? 'text' : 'password';
+        toggleBtn.textContent = passInput.type === 'password' ? '👁' : '🙈';
+      });
+    }
+  });
+</script>
+</body>
+</html>
