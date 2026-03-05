@@ -12,15 +12,12 @@ const EMAILJS_SERVICE_ID  = 'service_2pco3m9';   // Email Services tab
 const EMAILJS_TEMPLATE_ID = 'template_8n2o2yt';  // Email Templates tab
 
 /* ---- Claude AI Configuration ----
-   On localhost : calls Anthropic directly using CLAUDE_API_KEY below.
-   On Vercel    : calls /api/claude proxy (key stored in Vercel env vars).
+   All AI calls go through /api/claude (Vercel serverless proxy).
+   Key is stored in Vercel environment variables — never in frontend code.
    -------------------------------------------------------------------- */
-const CLAUDE_API_KEY = 'YOUR_CLAUDE_KEY'; // only needed for localhost testing
-const _isLocal   = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-const _claudeURL = _isLocal ? 'https://api.anthropic.com/v1/messages' : '/api/claude';
-const _claudeHeaders = _isLocal
-  ? { 'x-api-key': CLAUDE_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-dangerous-allow-browser': 'true' }
-  : { 'content-type': 'application/json' };
+const _claudeURL     = '/api/claude';
+const _claudeHeaders = { 'content-type': 'application/json' };
+const _isLocal       = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 
 /* ---- Global state ---- */
 let charts          = {};
@@ -833,7 +830,7 @@ function buildCreatorContext(data, kpis) {
  * Called once on CSV upload; result is cached in window._aiResult.
  */
 async function callClaudeAI(data, kpis) {
-  if (_isLocal && (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'YOUR_CLAUDE_KEY')) return null;
+  if (_isLocal) return null; // AI only available on deployed Vercel site
   const context = buildCreatorContext(data, kpis);
   const prompt  = `You are an expert social media analytics strategist specializing in the creator economy. Analyze this creator's performance data and return ONLY valid JSON — no markdown, no text outside the JSON.
 
@@ -2333,7 +2330,7 @@ async function _sendChat(text) {
   _appendChatMsg('user', text);
 
   // Use Claude streaming if API key is set and data is loaded
-  if ((!_isLocal || (CLAUDE_API_KEY && CLAUDE_API_KEY !== 'YOUR_CLAUDE_KEY')) && csvData.length > 0) {
+  if (!_isLocal && csvData.length > 0) {
     const msgEl = _appendChatMsg('bot', '▋');
     try {
       await _streamClaudeChat(text, msgEl);
