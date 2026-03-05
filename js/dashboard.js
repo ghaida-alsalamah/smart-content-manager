@@ -912,9 +912,14 @@ Rules:
   if (!res.ok) throw new Error(`Claude API ${res.status}`);
   const json  = await res.json();
   const raw   = json.content[0].text.trim();
-  // Strip markdown code fences if the model wraps output
-  const clean = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
-  return JSON.parse(clean);
+  // Strip markdown code fences, then extract the JSON object by finding
+  // the first '{' and last '}' — handles Arabic preface/suffix text the
+  // model sometimes adds despite "return valid JSON only" instructions.
+  const stripped = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+  const start = stripped.indexOf('{');
+  const end   = stripped.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new Error('No JSON object in response');
+  return JSON.parse(stripped.slice(start, end + 1));
 }
 
 /* ============================================================
