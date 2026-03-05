@@ -1,10 +1,8 @@
 /* ============================================================
    api/claude.js — Vercel serverless proxy for Claude API
-   Keeps the API key server-side; fixes CORS for browser clients.
    ============================================================ */
 
-export default async function handler(req, res) {
-  // CORS headers — allow requests from any origin (our frontend)
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -13,19 +11,24 @@ export default async function handler(req, res) {
   if (req.method !== 'POST')   return res.status(405).end();
 
   const apiKey = process.env.CLAUDE_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'CLAUDE_API_KEY not configured' });
+  if (!apiKey) return res.status(500).json({ error: 'CLAUDE_API_KEY not set in Vercel environment variables' });
 
   const isStream = req.body && req.body.stream === true;
 
-  const upstream = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key':          apiKey,
-      'anthropic-version':  '2023-06-01',
-      'content-type':       'application/json',
-    },
-    body: JSON.stringify(req.body),
-  });
+  let upstream;
+  try {
+    upstream = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key':         apiKey,
+        'anthropic-version': '2023-06-01',
+        'content-type':      'application/json',
+      },
+      body: JSON.stringify(req.body),
+    });
+  } catch (err) {
+    return res.status(502).json({ error: 'Failed to reach Anthropic API', detail: err.message });
+  }
 
   if (!upstream.ok) {
     const text = await upstream.text();
@@ -48,6 +51,6 @@ export default async function handler(req, res) {
     }
   } else {
     const data = await upstream.json();
-    res.json(data);
+    res.status(200).json(data);
   }
-}
+};
