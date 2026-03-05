@@ -283,6 +283,30 @@
 [dir="rtl"] .brand-report-header { flex-direction: row-reverse; }
 [dir="rtl"] .brand-scores-row .brand-score-card { text-align: right; }
 
+/* Brand overview — header banner inner text */
+[dir="rtl"] .brand-header-banner > div { text-align: right; }
+/* Brand overview — section heading h2 (flex child needs explicit align) */
+[dir="rtl"] .section-heading h2 { text-align: right; }
+/* Brand overview — feature cards (use .card, not .kpi-card) */
+[dir="rtl"] #section-brand-overview .card { text-align: right; }
+
+/* Find creators — search bar */
+[dir="rtl"] .creator-search-bar { flex-direction: row-reverse; }
+/* Find creators — result cards */
+[dir="rtl"] .creator-result-card { flex-direction: row-reverse; }
+[dir="rtl"] .creator-result-info { text-align: right; }
+[dir="rtl"] .creator-type-tags   { justify-content: flex-end; }
+
+/* Request cards (brand + creator requests share these classes) */
+[dir="rtl"] .request-card-header { flex-direction: row-reverse; }
+[dir="rtl"] .request-brand,
+[dir="rtl"] .request-campaign    { text-align: right; }
+[dir="rtl"] .request-meta        { justify-content: flex-end; }
+[dir="rtl"] .request-keymsg,
+[dir="rtl"] .request-req,
+[dir="rtl"] .request-date        { text-align: right; }
+[dir="rtl"] .request-actions     { flex-direction: row-reverse; }
+
 @media (max-width: 768px) {
   [dir="rtl"] .sidebar { transform: translateX(100%); }
   [dir="rtl"] .sidebar.open { transform: translateX(0); }
