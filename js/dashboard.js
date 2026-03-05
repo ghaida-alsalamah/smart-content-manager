@@ -880,6 +880,11 @@ Return exactly this JSON structure:
     "90": "2-3 sentences for a 90-day plan — build on the 30-day momentum with concrete milestones",
     "180": "2-3 sentences for a 6-month vision — paint an inspiring picture of where this creator could be"
   },
+  "actions": {
+    "30": ["3 to 5 specific, actionable bullet points for the next 30 days based on this creator's real data"],
+    "90": ["3 to 5 specific action steps for the 90-day period"],
+    "180": ["3 to 5 strategic action steps for the 6-month horizon"]
+  },
   "summary": "One warm, honest sentence summarizing this creator's overall performance — mention a key number and end on an encouraging note"
 }
 
@@ -888,6 +893,7 @@ Rules:
 - Write like a supportive coach, not a report — use "your" and "you" naturally.
 - Every explanation must reference actual numbers from the data to feel personalized, not generic.
 - Plans must be specific to this creator's situation — never copy-paste generic advice.
+- Actions must be concrete next steps, not vague advice — reference actual numbers where relevant.
 - severity "high" = needs attention soon, "medium" = worth addressing, "low" = a win or minor note.
 - Return valid JSON only.${langInstruction}`;
 
@@ -896,7 +902,7 @@ Rules:
     headers: _claudeHeaders,
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1500,
+      max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     }),
   });
@@ -1481,16 +1487,21 @@ function generateFuturePlan(data, kpis, period) {
     };
   }
 
-  const actions = [];
-  if (engTrend < -0.15)              actions.push(i18n.t('plan.action.eng.decline'));
-  if (saturationDetected)            actions.push(i18n.t('plan.action.saturation'));
-  else if (postTrend > 0.3 && engTrend < -0.05) actions.push(i18n.t('plan.action.post.high'));
-  if (kpis.revCV > 20)              actions.push(i18n.t('plan.action.rev.unstable'));
-  if (avgFolGrowth > 0.05)          actions.push(i18n.t('plan.action.growth.strong'));
-  if (period === 30)                 actions.push(i18n.t('plan.action.30'));
-  if (period === 90)                 actions.push(i18n.t('plan.action.90'));
-  if (period === 180)                actions.push(i18n.t('plan.action.180'));
-  if (actions.length === 0)         actions.push(i18n.t('plan.action.healthy'));
+  // Use AI-generated actions when available, fall back to rule-based
+  const aiActions = window._aiResult && window._aiResult.actions && window._aiResult.actions[period.toString()];
+  const actions = aiActions && aiActions.length > 0 ? aiActions : (() => {
+    const a = [];
+    if (engTrend < -0.15)              a.push(i18n.t('plan.action.eng.decline'));
+    if (saturationDetected)            a.push(i18n.t('plan.action.saturation'));
+    else if (postTrend > 0.3 && engTrend < -0.05) a.push(i18n.t('plan.action.post.high'));
+    if (kpis.revCV > 20)              a.push(i18n.t('plan.action.rev.unstable'));
+    if (avgFolGrowth > 0.05)          a.push(i18n.t('plan.action.growth.strong'));
+    if (period === 30)                 a.push(i18n.t('plan.action.30'));
+    if (period === 90)                 a.push(i18n.t('plan.action.90'));
+    if (period === 180)                a.push(i18n.t('plan.action.180'));
+    if (a.length === 0)               a.push(i18n.t('plan.action.healthy'));
+    return a;
+  })();
 
   return { period, months, projectedFollowers: projFol, expectedGrowthPercent: growthPct, riskLevel, riskScore, recommendedFreq, revenueProjection, actions, engTrend: round(engTrend * 100, 1), avgMonthlyGrowth: avgFolGrowth, adjGrowthRate };
 }
