@@ -1482,15 +1482,15 @@ function generateFuturePlan(data, kpis, period) {
   }
 
   const actions = [];
-  if (engTrend < -0.15)              actions.push('Audit content quality — engagement has declined significantly. Identify your top 3 performing post types and double down on them.');
-  if (saturationDetected)            actions.push('Reduce posting to 6–8 per period immediately. Invest twice the production effort per post.');
-  else if (postTrend > 0.3 && engTrend < -0.05) actions.push('Reduce posting frequency to avoid audience fatigue and creator burnout.');
-  if (kpis.revCV > 20)              actions.push('Pursue 2–3 long-term brand retainer deals to stabilize monthly revenue.');
-  if (avgFolGrowth > 0.05)          actions.push('Leverage strong follower growth with a collaboration or giveaway campaign.');
-  if (period === 30)                 actions.push('Short-term focus: Publish 1–2 high-effort hero pieces this month instead of frequent low-effort posts.');
-  if (period === 90)                 actions.push('Build a content series (3–5 episodes) over the quarter to deepen audience retention.');
-  if (period === 180)                actions.push('Develop a personal brand identity document — niche positioning, audience persona — to guide all 6-month decisions.');
-  if (actions.length === 0)         actions.push('Maintain your current strategy — metrics are healthy. Experiment with one new format to test growth upside.');
+  if (engTrend < -0.15)              actions.push(i18n.t('plan.action.eng.decline'));
+  if (saturationDetected)            actions.push(i18n.t('plan.action.saturation'));
+  else if (postTrend > 0.3 && engTrend < -0.05) actions.push(i18n.t('plan.action.post.high'));
+  if (kpis.revCV > 20)              actions.push(i18n.t('plan.action.rev.unstable'));
+  if (avgFolGrowth > 0.05)          actions.push(i18n.t('plan.action.growth.strong'));
+  if (period === 30)                 actions.push(i18n.t('plan.action.30'));
+  if (period === 90)                 actions.push(i18n.t('plan.action.90'));
+  if (period === 180)                actions.push(i18n.t('plan.action.180'));
+  if (actions.length === 0)         actions.push(i18n.t('plan.action.healthy'));
 
   return { period, months, projectedFollowers: projFol, expectedGrowthPercent: growthPct, riskLevel, riskScore, recommendedFreq, revenueProjection, actions, engTrend: round(engTrend * 100, 1), avgMonthlyGrowth: avgFolGrowth, adjGrowthRate };
 }

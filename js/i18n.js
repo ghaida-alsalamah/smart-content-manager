@@ -520,6 +520,17 @@ const translations = {
     "plan.freq.slight.increase": "slight increase",
     "plan.freq.maintain":        "maintain current pace",
 
+    /* ---------- Plan - Action items ---------- */
+    "plan.action.eng.decline":  "Audit content quality — engagement has declined significantly. Identify your top 3 performing post types and double down on them.",
+    "plan.action.saturation":   "Reduce posting to 6–8 per period immediately. Invest twice the production effort per post.",
+    "plan.action.post.high":    "Reduce posting frequency to avoid audience fatigue and creator burnout.",
+    "plan.action.rev.unstable": "Pursue 2–3 long-term brand retainer deals to stabilize monthly revenue.",
+    "plan.action.growth.strong":"Leverage strong follower growth with a collaboration or giveaway campaign.",
+    "plan.action.30":           "Short-term focus: Publish 1–2 high-effort hero pieces this month instead of frequent low-effort posts.",
+    "plan.action.90":           "Build a content series (3–5 episodes) over the quarter to deepen audience retention.",
+    "plan.action.180":          "Develop a personal brand identity document — niche positioning, audience persona — to guide all 6-month decisions.",
+    "plan.action.healthy":      "Maintain your current strategy — metrics are healthy. Experiment with one new format to test growth upside.",
+
     /* ---------- Plan - Explainability ---------- */
     "explain.hist.growth":       "Historical growth rate",
     "explain.eng.adj":           "Engagement trend adjustment",
@@ -1011,7 +1022,7 @@ const translations = {
     "search.sending":         "جارٍ الإرسال...",
 
     /* ---------- Role labels ---------- */
-    "role.creator":           "مبدع",
+    "role.creator":           "صانع محتوى",
     "role.brand":             "علامة تجارية",
 
     /* ---------- Upload mobile button ---------- */
@@ -1068,6 +1079,17 @@ const translations = {
     "plan.freq.reduce30":        "تقليل بنسبة 30%",
     "plan.freq.slight.increase": "زيادة طفيفة",
     "plan.freq.maintain":        "الحفاظ على المعدل الحالي",
+
+    /* ---------- Plan - Action items ---------- */
+    "plan.action.eng.decline":  "راجع جودة المحتوى — انخفض التفاعل بشكل ملحوظ. حدد أفضل 3 أنواع منشورات لديك وضاعف التركيز عليها.",
+    "plan.action.saturation":   "قلّل النشر إلى 6-8 منشورات في الفترة فوراً. استثمر ضعف الجهد الإنتاجي في كل منشور.",
+    "plan.action.post.high":    "قلّل تكرار النشر لتجنب إرهاق الجمهور وإرهاق المبدع.",
+    "plan.action.rev.unstable": "اسعَ للحصول على 2-3 عقود طويلة الأمد مع العلامات التجارية لتثبيت الإيرادات الشهرية.",
+    "plan.action.growth.strong":"استثمر نمو المتابعين القوي من خلال حملة تعاون أو مسابقة.",
+    "plan.action.30":           "تركيز قصير المدى: انشر 1-2 محتوى احترافي رئيسي هذا الشهر بدلاً من منشورات متكررة ومنخفضة الجهد.",
+    "plan.action.90":           "أنشئ سلسلة محتوى (3-5 حلقات) خلال الربع لتعميق ارتباط الجمهور.",
+    "plan.action.180":          "طوّر وثيقة هوية علامتك الشخصية — تخصصك وشخصية جمهورك — لتوجيه جميع قرارات الـ 6 أشهر.",
+    "plan.action.healthy":      "حافظ على استراتيجيتك الحالية — المقاييس في حالة جيدة. جرّب تنسيقاً جديداً لاختبار إمكانات النمو.",
 
     /* ---------- Plan - Explainability ---------- */
     "explain.hist.growth":       "معدل النمو التاريخي",
