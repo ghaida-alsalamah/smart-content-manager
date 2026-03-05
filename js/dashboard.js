@@ -373,27 +373,13 @@ function handleFile(file, mode) {
       } else {
         csvData = parsed;
 
-        // Kick off AI analysis in background (non-blocking)
-        window._aiResult  = null;
-        window._aiLoading = true;
-        (async () => {
-          try {
-            const d = getFilteredData();
-            const k = computeKPIs(d);
-            window._aiResult = await callClaudeAI(d, k);
-          } catch (_) { /* silent — rule-based fallback will be used */ }
-          window._aiLoading = false;
-          // Refresh whichever section the user is currently viewing
-          if (currentSection === 'insights')    renderInsights();
-          if (currentSection === 'future-plan') renderFuturePlanForPeriod(window._currentPlanPeriod || 30);
-        })();
-
         showProcessingIndicator(false, 'creator');
         document.getElementById('uploadSection').classList.add('hidden');
         document.getElementById('dashboardContent').classList.remove('hidden');
         document.getElementById('dashboardContent').classList.add('success-anim');
-        buildPlatformFilter(csvData);
+        buildPlatformFilter(csvData);   // sets activePlatform to first platform BEFORE AI call
         renderOverview(getFilteredData());
+        _triggerAI();                   // kick off AI for the active platform
         showToast(i18n.t('toast.upload.success'), 'success');
       }
     } catch (err) {
@@ -481,7 +467,10 @@ window.setPlatform = function(btn) {
   btn.classList.add('active');
   activePlatform = btn.dataset.platform;
   const data = getFilteredData();
-  if (data.length > 0) renderCharts(data, computeKPIs(data));
+  if (data.length > 0) {
+    renderCharts(data, computeKPIs(data));
+    _triggerAI();  // re-run AI for the newly selected platform
+  }
   const badge = document.getElementById('platformBadge');
   if (badge) badge.textContent = activePlatform.charAt(0).toUpperCase() + activePlatform.slice(1);
 };
@@ -826,13 +815,41 @@ function buildCreatorContext(data, kpis) {
 }
 
 /**
+ * Triggers (or re-triggers) the AI analysis for the current active platform.
+ * Safe to call on upload and on every platform switch.
+ */
+function _triggerAI() {
+  if (_isLocal || csvData.length === 0) return;
+  window._aiResult  = null;
+  window._aiLoading = true;
+  // Immediately show spinner if the user is already on an AI section
+  if (currentSection === 'insights')    renderInsights();
+  if (currentSection === 'future-plan') renderFuturePlanForPeriod(window._currentPlanPeriod || 30);
+  const platformAtStart = activePlatform; // capture so stale result is discarded if user switches again
+  (async () => {
+    try {
+      const d = getFilteredData();
+      const k = computeKPIs(d);
+      const result = await callClaudeAI(d, k);
+      // Only store if the platform hasn't changed while the call was in flight
+      if (activePlatform === platformAtStart) window._aiResult = result;
+    } catch (_) { /* silent — rule-based fallback will be used */ }
+    if (activePlatform === platformAtStart) {
+      window._aiLoading = false;
+      if (currentSection === 'insights')    renderInsights();
+      if (currentSection === 'future-plan') renderFuturePlanForPeriod(window._currentPlanPeriod || 30);
+    }
+  })();
+}
+
+/**
  * Single batched Claude API call — returns insights + 30/90/180-day plans.
- * Called once on CSV upload; result is cached in window._aiResult.
+ * Called via _triggerAI(); result is cached in window._aiResult.
  */
 async function callClaudeAI(data, kpis) {
   if (_isLocal) return null; // AI only available on deployed Vercel site
   const context = buildCreatorContext(data, kpis);
-  const prompt  = `You are an expert social media analytics strategist specializing in the creator economy. Analyze this creator's performance data and return ONLY valid JSON — no markdown, no text outside the JSON.
+  const prompt  = `You are a friendly and knowledgeable creator coach helping a content creator understand their performance. Analyze the data below and return ONLY valid JSON — no markdown, no text outside the JSON.
 
 CREATOR ANALYTICS:
 ${context}
@@ -843,24 +860,25 @@ Return exactly this JSON structure:
     {
       "id": "short-slug",
       "severity": "high|medium|low",
-      "title": "5-8 word title",
-      "explanation": "1-2 sentences referencing specific numbers from the data above",
-      "action": "One specific actionable recommendation"
+      "title": "Clear, encouraging 5-8 word title",
+      "explanation": "1-2 friendly sentences that reference specific numbers and explain what they mean in plain language — avoid jargon",
+      "action": "One clear, encouraging, specific next step the creator can take today"
     }
   ],
   "plans": {
-    "30": "2-3 sentence 30-day strategy tailored to this creator's specific metrics",
-    "90": "2-3 sentence 90-day strategy",
-    "180": "2-3 sentence 180-day strategy"
+    "30": "2-3 warm, motivating sentences for a 30-day plan tailored to this creator's exact numbers and situation",
+    "90": "2-3 sentences for a 90-day plan — build on the 30-day momentum with concrete milestones",
+    "180": "2-3 sentences for a 6-month vision — paint an inspiring picture of where this creator could be"
   },
-  "summary": "One sentence overall performance assessment that mentions key numbers"
+  "summary": "One warm, honest sentence summarizing this creator's overall performance — mention a key number and end on an encouraging note"
 }
 
 Rules:
-- 2 to 4 insights maximum. Include both problems AND positive signals where they exist.
-- Every explanation must reference actual numbers from the data.
-- Plans must address this specific creator's situation — no generic advice.
-- severity "high" = urgent action needed, "medium" = address soon, "low" = positive or minor note.
+- 2 to 4 insights maximum. Always include at least one positive signal alongside any problems.
+- Write like a supportive coach, not a report — use "your" and "you" naturally.
+- Every explanation must reference actual numbers from the data to feel personalized, not generic.
+- Plans must be specific to this creator's situation — never copy-paste generic advice.
+- severity "high" = needs attention soon, "medium" = worth addressing, "low" = a win or minor note.
 - Return valid JSON only.`;
 
   const res = await fetch(_claudeURL, {
@@ -868,7 +886,7 @@ Rules:
     headers: _claudeHeaders,
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1024,
+      max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }],
     }),
   });
@@ -1098,7 +1116,7 @@ function renderInsights() {
     grid.innerHTML = `
       <div class="ai-loading-card" style="grid-column:1/-1;">
         <div class="ai-spinner"></div>
-        <p class="ai-loading-text">AI is analyzing your data…</p>
+        <p class="ai-loading-text">${i18n.t('ai.loading')}</p>
       </div>`;
     return;
   }
@@ -1123,10 +1141,9 @@ function renderInsights() {
 /** Renders AI-generated insights into the grid. */
 function _renderAIInsights(grid, aiInsights, summary) {
   const sevIcon  = { high: '🔴', medium: '🟡', low: '🟢' };
-  const sevLabel = { high: 'High', medium: 'Medium', low: 'Low' };
   const summaryHTML = summary
     ? `<div class="ai-summary-bar" style="grid-column:1/-1;">
-         <span class="ai-badge-inline">Claude AI</span>
+         <span class="ai-badge-inline">${i18n.t('ai.badge')}</span>
          <span>${summary}</span>
        </div>`
     : '';
@@ -1134,11 +1151,11 @@ function _renderAIInsights(grid, aiInsights, summary) {
     <div class="insight-card">
       <div class="insight-header">
         <div class="insight-title">${sevIcon[i.severity] || '🟡'} ${i.title}</div>
-        <span class="severity-badge severity-${i.severity}">${sevLabel[i.severity] || i.severity}</span>
+        <span class="severity-badge severity-${i.severity}">${i18n.t('ai.sev.' + i.severity) || i.severity}</span>
       </div>
       <p class="insight-body">${i.explanation}</p>
       <div class="insight-rec"><span class="rec-icon">💡</span><span>${i.action}</span></div>
-      <div class="ai-insight-footer">Generated by Claude AI</div>
+      <div class="ai-insight-footer">${i18n.t('ai.footer')}</div>
     </div>`).join('');
 }
 
@@ -1338,24 +1355,25 @@ window.renderFuturePlanForPeriod = function(period) {
     ${(() => {
       const pKey = period.toString();
       const aiPlan = window._aiResult && window._aiResult.plans && window._aiResult.plans[pKey];
-      const periodLabel = period === 30 ? '30-Day' : period === 90 ? '90-Day' : '6-Month';
+      const periodKey = period === 30 ? 'ai.period.30' : period === 90 ? 'ai.period.90' : 'ai.period.180';
+      const periodLabel = i18n.t(periodKey);
       if (window._aiLoading) {
         return `<div class="card ai-strategy-card" style="margin-bottom:20px;">
           <div class="section-heading" style="margin-bottom:16px;">
-            <h2 style="font-size:1rem;">AI Strategy — ${periodLabel}</h2>
+            <h2 style="font-size:1rem;">${i18n.t('ai.strategy.title')} — ${periodLabel}</h2>
             <div class="line"></div>
           </div>
-          <div class="ai-loading-inline"><div class="ai-spinner-sm"></div><span>Claude is generating your strategy…</span></div>
+          <div class="ai-loading-inline"><div class="ai-spinner-sm"></div><span>${i18n.t('ai.strategy.loading')}</span></div>
         </div>`;
       }
       if (aiPlan) {
         return `<div class="card ai-strategy-card" style="margin-bottom:20px;">
           <div class="section-heading" style="margin-bottom:16px;">
-            <h2 style="font-size:1rem;">AI Strategy — ${periodLabel}</h2>
+            <h2 style="font-size:1rem;">${i18n.t('ai.strategy.title')} — ${periodLabel}</h2>
             <div class="line"></div>
           </div>
           <p class="ai-strategy-body">${aiPlan}</p>
-          <div class="ai-insight-footer" style="margin-top:12px;">Generated by Claude AI</div>
+          <div class="ai-insight-footer" style="margin-top:12px;">${i18n.t('ai.footer')}</div>
         </div>`;
       }
       return `<div class="card" style="margin-bottom:20px;">
@@ -1953,7 +1971,7 @@ Best regards,
       </div>
 
       <div class="pricing-disclaimer" style="margin-top:16px;">
-        This report is generated from the uploaded CSV only. Accuracy depends on data completeness. Confidence level: ${conf.score}% (${conf.label}). This is a rule-based evaluation model — not financial advice.
+        ${i18n.t('pricing.disclaimer.text')} ${i18n.t('plan.confidence')}: ${conf.score}% (${conf.label}).
       </div>`;
   }
 }
@@ -2309,7 +2327,11 @@ function initChatbot() {
   btn.addEventListener('click', () => {
     panel.classList.toggle('open');
     if (panel.classList.contains('open')) {
-      if (_chatHistory.length === 0) _appendChatMsg('bot', i18n.t('chat.welcome'));
+      const msgs = document.getElementById('chatMessages');
+      if (msgs && msgs.children.length === 0) {
+        _appendChatMsg('bot', i18n.t('chat.welcome'));
+        _appendChatSuggestions();
+      }
       setTimeout(() => input.focus(), 50);
     }
   });
@@ -2327,6 +2349,8 @@ function initChatbot() {
 
 
 async function _sendChat(text) {
+  const chips = document.getElementById('chatSuggestions');
+  if (chips) chips.remove();
   _appendChatMsg('user', text);
 
   // Use Claude streaming if API key is set and data is loaded
@@ -2360,7 +2384,7 @@ async function _streamClaudeChat(userText, msgEl) {
   const kpis    = computeKPIs(data);
   const context = buildCreatorContext(data, kpis);
 
-  const systemPrompt = `You are SCM Assistant, an AI analytics advisor embedded in Smart Content Manager. You have access to the creator's live analytics data below. Answer their questions with specific, data-driven advice. Be concise — 2 to 4 sentences max. Always reference actual numbers from their data.
+  const systemPrompt = `You are a friendly creator coach inside Smart Content Manager. You have the creator's live data below — use it to give warm, specific, and helpful answers. Keep replies short (2–4 sentences), reference their actual numbers, and always end with encouragement or a clear next step. Avoid jargon and write like a supportive friend who knows data.
 
 CREATOR'S LIVE DATA:
 ${context}`;
@@ -2413,13 +2437,19 @@ ${context}`;
     }
   }
 
-  // Remove trailing cursor if still there
-  if (msgEl && msgEl.textContent.endsWith('▋')) {
-    msgEl.textContent = msgEl.textContent.slice(0, -1);
+  // Remove trailing cursor; show fallback if stream returned nothing
+  if (msgEl) {
+    if (!fullText) {
+      msgEl.textContent = i18n.t('chat.error') || 'Sorry, I could not get a response. Please try again.';
+    } else if (msgEl.textContent.endsWith('▋')) {
+      msgEl.textContent = fullText;
+    }
   }
 
-  _chatHistory.push({ role: 'user',  parts: [{ text: userText }] });
-  _chatHistory.push({ role: 'model', parts: [{ text: fullText }] });
+  if (fullText) {
+    _chatHistory.push({ role: 'user',  parts: [{ text: userText }] });
+    _chatHistory.push({ role: 'model', parts: [{ text: fullText }] });
+  }
 }
 
 function _localChat(text) {
@@ -2683,13 +2713,26 @@ function _deepDive(topic, { isAr, data, kpis, insights, hs }) {
   }
 }
 
+const _BOT_AVATAR_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>';
+
 function _appendChatMsg(role, text) {
   const el = document.getElementById('chatMessages');
   if (!el) return null;
   const div = document.createElement('div');
   div.className = `chat-msg chat-msg-${role}`;
   div.textContent = text;
-  el.appendChild(div);
+  if (role === 'bot') {
+    const row = document.createElement('div');
+    row.className = 'chat-msg-row';
+    const av = document.createElement('div');
+    av.className = 'chat-msg-avatar-sm';
+    av.innerHTML = _BOT_AVATAR_SVG;
+    row.appendChild(av);
+    row.appendChild(div);
+    el.appendChild(row);
+  } else {
+    el.appendChild(div);
+  }
   el.scrollTop = el.scrollHeight;
   return div; // returned so streaming can update the element in-place
 }
@@ -2697,17 +2740,52 @@ function _appendChatMsg(role, text) {
 function _appendChatTyping() {
   const el = document.getElementById('chatMessages');
   if (!el) return;
+  const row = document.createElement('div');
+  row.className = 'chat-msg-row';
+  row.id = 'chatTypingRow';
+  const av = document.createElement('div');
+  av.className = 'chat-msg-avatar-sm';
+  av.innerHTML = _BOT_AVATAR_SVG;
   const div = document.createElement('div');
   div.className = 'chat-msg chat-msg-bot chat-typing';
   div.id = 'chatTyping';
   div.innerHTML = '<span></span><span></span><span></span>';
-  el.appendChild(div);
+  row.appendChild(av);
+  row.appendChild(div);
+  el.appendChild(row);
   el.scrollTop = el.scrollHeight;
 }
 
 function _removeTyping() {
+  const row = document.getElementById('chatTypingRow');
+  if (row) { row.remove(); return; }
   const t = document.getElementById('chatTyping');
   if (t) t.remove();
+}
+
+function _appendChatSuggestions() {
+  const el = document.getElementById('chatMessages');
+  if (!el) return;
+  const chips = [
+    i18n.t('chat.chip1') || "What's my best performer?",
+    i18n.t('chat.chip2') || 'Show revenue trend',
+    i18n.t('chat.chip3') || 'How am I doing?',
+  ];
+  const wrapper = document.createElement('div');
+  wrapper.className = 'chat-chips';
+  wrapper.id = 'chatSuggestions';
+  chips.forEach(label => {
+    const btn = document.createElement('button');
+    btn.className = 'chat-chip';
+    btn.textContent = label;
+    btn.addEventListener('click', () => {
+      wrapper.remove();
+      _sendChat(label);
+    });
+    wrapper.appendChild(btn);
+  });
+  el.appendChild(wrapper);
+  el.scrollTop = el.scrollHeight;
 }
 
 /* ============================================================
