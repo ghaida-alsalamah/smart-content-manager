@@ -1392,15 +1392,34 @@ window.renderFuturePlanForPeriod = function(period) {
           <div class="ai-insight-footer" style="margin-top:12px;">${i18n.t('ai.footer')}</div>
         </div>`;
       }
-      return `<div class="card" style="margin-bottom:20px;">
-        <div class="section-heading" style="margin-bottom:16px;">
-          <h2 style="font-size:1rem;">${i18n.t('plan.action.title')}</h2>
-          <div class="line"></div>
-        </div>
-        <div class="action-plan-list">
-          ${plan.actions.map(a => `<div class="action-item"><div class="action-dot"></div><span>${a}</span></div>`).join('')}
-        </div>
-      </div>`;
+      return '';
+    })()}
+
+    ${(() => {
+      const pKey = period.toString();
+      const aiActions = window._aiResult && window._aiResult.actions && window._aiResult.actions[pKey];
+      if (window._aiLoading) {
+        return `<div class="card" style="margin-bottom:20px;">
+          <div class="section-heading" style="margin-bottom:16px;">
+            <h2 style="font-size:1rem;">${i18n.t('plan.action.title')}</h2>
+            <div class="line"></div>
+          </div>
+          <div class="ai-loading-inline"><div class="ai-spinner-sm"></div><span>${i18n.t('ai.strategy.loading')}</span></div>
+        </div>`;
+      }
+      if (aiActions && aiActions.length > 0) {
+        return `<div class="card" style="margin-bottom:20px;">
+          <div class="section-heading" style="margin-bottom:16px;">
+            <h2 style="font-size:1rem;">${i18n.t('plan.action.title')}</h2>
+            <div class="line"></div>
+          </div>
+          <div class="action-plan-list">
+            ${aiActions.map(a => `<div class="action-item"><div class="action-dot"></div><span>${a}</span></div>`).join('')}
+          </div>
+          <div class="ai-insight-footer" style="margin-top:12px;">${i18n.t('ai.footer')}</div>
+        </div>`;
+      }
+      return '';
     })()}
 
     <div class="plan-explanation">
