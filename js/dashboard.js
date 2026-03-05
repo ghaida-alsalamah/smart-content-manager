@@ -856,10 +856,10 @@ async function callClaudeAI(data, kpis) {
   if (_isLocal) return null; // AI only available on deployed Vercel site
   const context = buildCreatorContext(data, kpis);
   const isAr = i18n.current === 'ar';
-  const langInstruction = isAr
-    ? '\n\nIMPORTANT: Write ALL text values in the JSON in Arabic (Modern Standard Arabic). Every string field — titles, explanations, actions, plans, summary — must be in Arabic.'
+  const langPrefix = isAr
+    ? 'LANGUAGE REQUIREMENT: You must respond entirely in Arabic. Every string value in the JSON must be written in Arabic. Do not use any English words in the output values.\n\n'
     : '';
-  const prompt  = `You are a friendly and knowledgeable creator coach helping a content creator understand their performance. Analyze the data below and return ONLY valid JSON — no markdown, no text outside the JSON.
+  const prompt  = `${langPrefix}You are a friendly and knowledgeable creator coach helping a content creator understand their performance. Analyze the data below and return ONLY valid JSON — no markdown, no text outside the JSON.
 
 CREATOR ANALYTICS:
 ${context}
@@ -895,7 +895,7 @@ Rules:
 - Plans must be specific to this creator's situation — never copy-paste generic advice.
 - Actions must be concrete next steps, not vague advice — reference actual numbers where relevant.
 - severity "high" = needs attention soon, "medium" = worth addressing, "low" = a win or minor note.
-- Return valid JSON only.${langInstruction}`;
+- Return valid JSON only.`;
 
   const res = await fetch(_claudeURL, {
     method: 'POST',
