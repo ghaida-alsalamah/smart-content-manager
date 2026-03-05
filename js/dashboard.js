@@ -902,18 +902,37 @@ Rules:
     method: 'POST',
     headers: _claudeHeaders,
     body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
+      model:      'claude-haiku-4-5-20251001',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }],
+      stream:     true,
+      messages:   [{ role: 'user', content: prompt }],
     }),
   });
 
   if (!res.ok) throw new Error(`Claude API ${res.status}`);
-  const json  = await res.json();
-  const raw   = json.content[0].text.trim();
-  // Strip markdown code fences, then extract the JSON object by finding
-  // the first '{' and last '}' — handles Arabic preface/suffix text the
-  // model sometimes adds despite "return valid JSON only" instructions.
+
+  // Stream the response to avoid Vercel's 10s non-streaming timeout.
+  // Arabic responses take longer to generate, so streaming is required.
+  const reader  = res.body.getReader();
+  const decoder = new TextDecoder();
+  let raw = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    for (const line of chunk.split('\n')) {
+      if (!line.startsWith('data: ')) continue;
+      const data = line.slice(6).trim();
+      if (data === '[DONE]') break;
+      try {
+        const evt = JSON.parse(data);
+        if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta')
+          raw += evt.delta.text;
+      } catch (_) {}
+    }
+  }
+
+  // Extract the JSON object — handles any Arabic preface/suffix text
   const stripped = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
   const start = stripped.indexOf('{');
   const end   = stripped.lastIndexOf('}');
