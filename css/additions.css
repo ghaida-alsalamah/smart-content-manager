@@ -813,13 +813,13 @@ body[dir="rtl"] .chat-fab { right: auto; left: 24px; }
   color: var(--text-primary);
   box-shadow: 0 4px 18px rgba(0,0,0,0.35);
   pointer-events: none;
-  animation: bubble-loop 5s ease infinite;
+  animation: bubble-loop 10s ease infinite;
 }
 @keyframes bubble-loop {
   0%   { opacity: 0; transform: translateX(10px); }
-  12%  { opacity: 1; transform: translateX(0); }
-  72%  { opacity: 1; transform: translateX(0); }
-  88%  { opacity: 0; transform: translateX(10px); }
+  8%   { opacity: 1; transform: translateX(0); }
+  45%  { opacity: 1; transform: translateX(0); }
+  55%  { opacity: 0; transform: translateX(10px); }
   100% { opacity: 0; transform: translateX(10px); }
 }
 /* tail pointing bottom-right toward the robot */
