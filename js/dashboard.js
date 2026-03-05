@@ -2316,6 +2316,44 @@ function downloadSampleCSV() {
 let _chatHistory = []; // { role: 'user'|'model', parts: [{ text }] }
 let _lastTopic   = null; // tracks last discussed topic for follow-up handling
 
+function initChatResize() {
+  const panel  = document.getElementById('chatPanel');
+  const handle = document.getElementById('chatResizeHandle');
+  if (!handle || !panel) return;
+
+  let startX, startY, startW, startH;
+
+  handle.addEventListener('mousedown', e => {
+    e.preventDefault();
+    startX = e.clientX;
+    startY = e.clientY;
+    startW = panel.offsetWidth;
+    startH = panel.offsetHeight;
+    document.addEventListener('mousemove', onResize);
+    document.addEventListener('mouseup', stopResize);
+  });
+
+  function onResize(e) {
+    const isRTL = document.body.getAttribute('dir') === 'rtl';
+    const dx = isRTL ? e.clientX - startX : startX - e.clientX;
+    const dy = startY - e.clientY;
+    const newW = Math.min(Math.max(startW + dx, 390), 700);
+    const newH = Math.min(Math.max(startH + dy, 400), 780);
+    panel.style.width = newW + 'px';
+    const msgs   = document.getElementById('chatMessages');
+    const header = panel.querySelector('.chat-header');
+    const input  = panel.querySelector('.chat-input-row');
+    if (msgs && header && input) {
+      msgs.style.maxHeight = (newH - header.offsetHeight - input.offsetHeight) + 'px';
+    }
+  }
+
+  function stopResize() {
+    document.removeEventListener('mousemove', onResize);
+    document.removeEventListener('mouseup', stopResize);
+  }
+}
+
 function initChatbot() {
   const btn   = document.getElementById('chatFab');
   const panel = document.getElementById('chatPanel');
@@ -2337,6 +2375,8 @@ function initChatbot() {
   });
 
   if (close) close.addEventListener('click', () => panel.classList.remove('open'));
+
+  initChatResize();
 
   if (form) form.addEventListener('submit', async e => {
     e.preventDefault();
@@ -2713,7 +2753,7 @@ function _deepDive(topic, { isAr, data, kpis, insights, hs }) {
   }
 }
 
-const _BOT_AVATAR_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>';
+const _BOT_AVATAR_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="14" height="11" rx="2.5"/><circle cx="9.5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="14.5" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M9.5 15.5h5"/><path d="M12 7V4"/><circle cx="12" cy="3.5" r="1" fill="currentColor" stroke="none"/></svg>';
 
 function _appendChatMsg(role, text) {
   const el = document.getElementById('chatMessages');
