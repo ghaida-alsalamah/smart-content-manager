@@ -30,6 +30,7 @@ let currentSection  = 'overview';
 /* ---- AI state ---- */
 window._aiResult  = null;   // parsed JSON from Claude (insights + plans + summary)
 window._aiLoading = false;  // true while the API call is in-flight
+window._aiFailed  = false;  // true when the call completed but parsing failed
 let _aiGeneration = 0;      // incremented each call; stale completions are discarded
 window._currentPlanPeriod = 30;
 
@@ -828,6 +829,7 @@ function buildCreatorContext(data, kpis) {
 function _triggerAI() {
   if (_isLocal || csvData.length === 0) return;
   window._aiResult  = null;
+  window._aiFailed  = false;
   window._aiLoading = true;
   const platformAtStart = activePlatform; // capture so stale result is discarded if user switches again
   const generation = ++_aiGeneration;     // unique ID for this call; earlier calls are discarded
@@ -835,15 +837,17 @@ function _triggerAI() {
   if (currentSection === 'insights')    renderInsights();
   if (currentSection === 'future-plan') renderFuturePlanForPeriod(window._currentPlanPeriod || 30);
   (async () => {
+    let failed = false;
     try {
       const d = getFilteredData();
       const k = computeKPIs(d);
       const result = await callClaudeAI(d, k);
       // Only store if this is still the latest call and platform hasn't changed
       if (generation === _aiGeneration && activePlatform === platformAtStart) window._aiResult = result;
-    } catch (_) { /* silent */ }
+    } catch (_) { failed = true; }
     if (generation === _aiGeneration && activePlatform === platformAtStart) {
       window._aiLoading = false;
+      if (failed) window._aiFailed = true;
       if (currentSection === 'insights')    renderInsights();
       if (currentSection === 'future-plan') renderFuturePlanForPeriod(window._currentPlanPeriod || 30);
     }
@@ -859,7 +863,7 @@ async function callClaudeAI(data, kpis) {
   const context = buildCreatorContext(data, kpis);
   const isAr = i18n.current === 'ar';
   const langPrefix = isAr
-    ? 'LANGUAGE REQUIREMENT: You must respond entirely in Arabic. Every string value in the JSON must be written in Arabic. Do not use any English words in the output values.\n\n'
+    ? 'CRITICAL: Output ONLY the raw JSON object — absolutely no Arabic or English text before or after it. Write all narrative fields (title, explanation, action, plans values, actions array items, summary) in Arabic. Keep "id" as a short English slug and "severity" as "high", "medium", or "low".\n\n'
     : '';
   const prompt  = `${langPrefix}You are a friendly and knowledgeable creator coach helping a content creator understand their performance. Analyze the data below and return ONLY valid JSON — no markdown, no text outside the JSON.
 
@@ -1399,6 +1403,15 @@ window.renderFuturePlanForPeriod = function(period) {
           <div class="ai-insight-footer" style="margin-top:12px;">${i18n.t('ai.footer')}</div>
         </div>`;
       }
+      if (window._aiFailed) {
+        return `<div class="card ai-strategy-card" style="margin-bottom:20px;">
+          <div class="section-heading" style="margin-bottom:16px;">
+            <h2 style="font-size:1rem;">${i18n.t('ai.strategy.title')} — ${periodLabel}</h2>
+            <div class="line"></div>
+          </div>
+          <p class="ai-strategy-body" style="color:var(--text-secondary);">${i18n.t('ai.retry')}</p>
+        </div>`;
+      }
       return '';
     })()}
 
@@ -1424,6 +1437,15 @@ window.renderFuturePlanForPeriod = function(period) {
             ${aiActions.map(a => `<div class="action-item"><div class="action-dot"></div><span>${a}</span></div>`).join('')}
           </div>
           <div class="ai-insight-footer" style="margin-top:12px;">${i18n.t('ai.footer')}</div>
+        </div>`;
+      }
+      if (window._aiFailed) {
+        return `<div class="card" style="margin-bottom:20px;">
+          <div class="section-heading" style="margin-bottom:16px;">
+            <h2 style="font-size:1rem;">${i18n.t('plan.action.title')}</h2>
+            <div class="line"></div>
+          </div>
+          <p style="color:var(--text-secondary);padding:8px 0;">${i18n.t('ai.retry')}</p>
         </div>`;
       }
       return '';
