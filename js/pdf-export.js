@@ -92,6 +92,47 @@ window.downloadReport = async function () {
     doc.line(M, y, PW - M, y);
     y += 20;
 
+    /* ── KPI Grid ── */
+    const kpis = [
+      { label: 'ENGAGEMENT RATE', id: 'kpiEngRate' },
+      { label: 'FOLLOWER GROWTH', id: 'kpiGrowth' },
+      { label: 'TOTAL FOLLOWERS', id: 'kpiFollowers' },
+      { label: 'TOTAL POSTS',     id: 'kpiPosts' },
+      { label: 'REVENUE',         id: 'kpiRevenue' },
+      { label: 'VOLATILITY',      id: 'kpiVolatility' },
+    ];
+
+    const cols  = 3;
+    const boxW  = (INNER - (cols - 1) * 8) / cols;
+    const boxH  = 44;
+
+    kpis.forEach((k, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const x   = M + col * (boxW + 8);
+      const by  = y + row * (boxH + 8);
+      const val = (document.getElementById(k.id) || {}).textContent || '-';
+
+      doc.setFillColor(isDark ? '#161B27' : '#F1F5F9');
+      doc.roundedRect(x, by, boxW, boxH, 4, 4, 'F');
+
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(MUTED);
+      doc.text(k.label, x + 8, by + 13);
+
+      doc.setFontSize(15);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(PURPLE);
+      doc.text(String(val).replace(/[^\x20-\x7E]/g, '').trim() || '-', x + 8, by + 34);
+    });
+
+    y += Math.ceil(kpis.length / cols) * (boxH + 8) + 12;
+    doc.setDrawColor(PURPLE);
+    doc.setLineWidth(0.5);
+    doc.line(M, y, PW - M, y);
+    y += 20;
+
     /* ── Charts ── */
     const chartDefs = [
       { key: 'followers',  labelEn: 'Follower Growth',  labelAr: 'Follower Growth' },
