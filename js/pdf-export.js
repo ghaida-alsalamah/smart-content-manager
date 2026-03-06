@@ -27,6 +27,16 @@ window.downloadReport = async function () {
     const ORANGE = '#D97706';
     const RED    = '#DC2626';
 
+    function clean(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/[\u{1F000}-\u{1FFFF}]/gu, '')
+        .replace(/[\u{2600}-\u{27BF}]/gu, '')
+        .replace(/[^\u0020-\u007E\u00A0-\u00FF]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
     function newPage() {
       doc.addPage();
       y = M;
@@ -120,7 +130,7 @@ window.downloadReport = async function () {
         doc.setFontSize(9);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(MUTED);
-        const lines = doc.splitTextToSize(ai.summary, INNER);
+        const lines = doc.splitTextToSize(clean(ai.summary), INNER);
         lines.forEach(l => {
           space(13);
           doc.text(l, M, y);
@@ -132,52 +142,53 @@ window.downloadReport = async function () {
       ai.insights.forEach(ins => {
         space(70);
         const sevColor = ins.severity === 'high' ? RED : ins.severity === 'medium' ? ORANGE : GREEN;
+        const sevLabel  = ins.severity === 'high' ? 'HIGH' : ins.severity === 'medium' ? 'MEDIUM' : 'LOW';
 
-        doc.setFillColor('#F8FAFC');
         doc.setDrawColor(sevColor);
         doc.setLineWidth(3);
-        doc.roundedRect(M, y, INNER, 3, 0, 0, 'F');
-        doc.line(M, y, M, y + 3);
+        doc.line(M, y, M, y + 60);
 
-        y += 10;
         doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(FG);
-        doc.text(ins.title || '', M + 4, y);
+        doc.text(clean(ins.title) || 'Insight', M + 10, y + 12);
 
         doc.setFontSize(8);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(sevColor);
-        doc.text((ins.severity || '').toUpperCase(), PW - M, y, { align: 'right' });
-        y += 14;
+        doc.text(sevLabel, PW - M, y + 12, { align: 'right' });
+        y += 20;
 
         if (ins.explanation) {
           doc.setFontSize(9);
           doc.setFont('helvetica', 'normal');
           doc.setTextColor(MUTED);
-          const lines = doc.splitTextToSize(ins.explanation, INNER - 8);
+          const lines = doc.splitTextToSize(clean(ins.explanation), INNER - 16);
           lines.forEach(l => {
             space(12);
-            doc.text(l, M + 4, y);
+            doc.text(l, M + 10, y);
             y += 12;
           });
         }
 
         if (ins.action) {
-          y += 3;
+          y += 4;
           space(12);
           doc.setFontSize(8);
           doc.setFont('helvetica', 'bold');
           doc.setTextColor(PURPLE);
-          const recLines = doc.splitTextToSize('Recommendation: ' + ins.action, INNER - 8);
+          doc.text('Recommendation:', M + 10, y);
+          y += 12;
+          doc.setFont('helvetica', 'normal');
+          const recLines = doc.splitTextToSize(clean(ins.action), INNER - 16);
           recLines.forEach(l => {
             space(12);
-            doc.text(l, M + 4, y);
+            doc.text(l, M + 10, y);
             y += 12;
           });
         }
 
-        y += 12;
+        y += 16;
       });
     }
 
