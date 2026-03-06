@@ -28,10 +28,12 @@ let activeDateRange = 'all';
 let currentSection  = 'overview';
 
 /* ---- AI state ---- */
-window._aiResult  = null;   // parsed JSON from Claude (insights + plans + summary)
-window._aiLoading = false;  // true while the API call is in-flight
-window._aiFailed  = false;  // true when the call completed but parsing failed
-let _aiGeneration = 0;      // incremented each call; stale completions are discarded
+window._aiResult   = null;   // active result for current language (EN or AR)
+window._aiResultEn = null;   // English analysis result (always generated first)
+window._aiResultAr = null;   // Arabic translation of _aiResultEn (generated on demand)
+window._aiLoading  = false;  // true while an API call is in-flight
+window._aiFailed   = false;  // true when the call completed but parsing failed
+let _aiGeneration  = 0;      // incremented on each new CSV/platform; stale calls are discarded
 window._currentPlanPeriod = 30;
 
 /* ============================================================
@@ -93,8 +95,8 @@ i18n.afterApply = function() {
   if (currentSection === 'insights')    renderInsights();
   if (currentSection === 'future-plan') renderFuturePlan(data, kpis);
   if (currentSection === 'ad-pricing')  renderAdPricing(data, kpis);
-  // Re-trigger AI so strategy text matches the selected language
-  _triggerAI();
+  // Apply language to cached AI result (translates to Arabic if needed; no re-analysis)
+  _applyLanguageToAI();
 };
 
 /* ============================================================
@@ -828,12 +830,13 @@ function buildCreatorContext(data, kpis) {
  */
 function _triggerAI() {
   if (_isLocal || csvData.length === 0) return;
-  window._aiResult  = null;
-  window._aiFailed  = false;
-  window._aiLoading = true;
-  const platformAtStart = activePlatform; // capture so stale result is discarded if user switches again
-  const generation = ++_aiGeneration;     // unique ID for this call; earlier calls are discarded
-  // Immediately show spinner if the user is already on an AI section
+  window._aiResult   = null;
+  window._aiResultEn = null;
+  window._aiResultAr = null;
+  window._aiFailed   = false;
+  window._aiLoading  = true;
+  const platformAtStart = activePlatform;
+  const generation = ++_aiGeneration;
   if (currentSection === 'insights')    renderInsights();
   if (currentSection === 'future-plan') renderFuturePlanForPeriod(window._currentPlanPeriod || 30);
   (async () => {
@@ -841,11 +844,66 @@ function _triggerAI() {
     try {
       const d = getFilteredData();
       const k = computeKPIs(d);
-      const result = await callClaudeAI(d, k);
-      // Only store if this is still the latest call and platform hasn't changed
-      if (generation === _aiGeneration && activePlatform === platformAtStart) window._aiResult = result;
+      const resultEn = await callClaudeAI(d, k); // always English
+      if (generation === _aiGeneration && activePlatform === platformAtStart) {
+        window._aiResultEn = resultEn;
+      }
     } catch (_) { failed = true; }
     if (generation === _aiGeneration && activePlatform === platformAtStart) {
+      if (failed) {
+        window._aiLoading = false;
+        window._aiFailed  = true;
+        if (currentSection === 'insights')    renderInsights();
+        if (currentSection === 'future-plan') renderFuturePlanForPeriod(window._currentPlanPeriod || 30);
+      } else {
+        // Apply current language (translates to Arabic if needed, then re-renders)
+        _applyLanguageToAI(generation);
+      }
+    }
+  })();
+}
+
+/**
+ * Apply the cached English result to the current language.
+ * - English: instant (use _aiResultEn directly).
+ * - Arabic:  use cached _aiResultAr, or translate now and cache it.
+ * Pass the generation number so stale translation calls are discarded.
+ */
+function _applyLanguageToAI(generation) {
+  if (_isLocal || !window._aiResultEn) return;
+  generation = generation ?? _aiGeneration;
+
+  if (i18n.current !== 'ar') {
+    window._aiLoading = false;
+    window._aiResult  = window._aiResultEn;
+    if (currentSection === 'insights')    renderInsights();
+    if (currentSection === 'future-plan') renderFuturePlanForPeriod(window._currentPlanPeriod || 30);
+    return;
+  }
+
+  if (window._aiResultAr) {
+    window._aiLoading = false;
+    window._aiResult  = window._aiResultAr;
+    if (currentSection === 'insights')    renderInsights();
+    if (currentSection === 'future-plan') renderFuturePlanForPeriod(window._currentPlanPeriod || 30);
+    return;
+  }
+
+  // No Arabic cache — translate now (spinner stays on)
+  window._aiResult  = null;
+  window._aiLoading = true;
+  if (currentSection === 'insights')    renderInsights();
+  if (currentSection === 'future-plan') renderFuturePlanForPeriod(window._currentPlanPeriod || 30);
+  (async () => {
+    let failed = false;
+    try {
+      const resultAr = await _translateAIResult(window._aiResultEn);
+      if (generation === _aiGeneration && i18n.current === 'ar') {
+        window._aiResultAr = resultAr;
+        window._aiResult   = resultAr;
+      }
+    } catch (_) { failed = true; }
+    if (generation === _aiGeneration) {
       window._aiLoading = false;
       if (failed) window._aiFailed = true;
       if (currentSection === 'insights')    renderInsights();
@@ -855,24 +913,67 @@ function _triggerAI() {
 }
 
 /**
- * Single batched Claude API call — returns insights + 30/90/180-day plans.
- * Called via _triggerAI(); result is cached in window._aiResult.
+ * Translate an English AI result JSON to Arabic.
+ * Only user-visible string fields are translated; "id" and "severity" stay in English.
+ */
+async function _translateAIResult(resultEn) {
+  if (_isLocal) return null;
+  const prompt = `Translate all user-visible text fields in the JSON below from English to natural, warm, fluent Arabic.
+Keep "id" values unchanged (short English slugs). Keep "severity" values unchanged ("high", "medium", "low").
+Return ONLY a raw JSON object with the exact same structure — no markdown fences, no extra text.
+
+${JSON.stringify(resultEn)}`;
+
+  const res = await fetch(_claudeURL, {
+    method: 'POST',
+    headers: _claudeHeaders,
+    body: JSON.stringify({
+      model:      'claude-haiku-4-5-20251001',
+      max_tokens: 4000,
+      stream:     true,
+      messages:   [{ role: 'user', content: prompt }],
+    }),
+  });
+  if (!res.ok) throw new Error(`Claude API ${res.status}`);
+
+  const reader  = res.body.getReader();
+  const decoder = new TextDecoder();
+  let raw = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    for (const line of chunk.split('\n')) {
+      if (!line.startsWith('data: ')) continue;
+      const data = line.slice(6).trim();
+      if (data === '[DONE]') break;
+      try {
+        const evt = JSON.parse(data);
+        if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta')
+          raw += evt.delta.text;
+      } catch (_) {}
+    }
+  }
+  const stripped = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+  const start = stripped.indexOf('{');
+  const end   = stripped.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new Error('No JSON object in translation response');
+  return JSON.parse(stripped.slice(start, end + 1));
+}
+
+/**
+ * Single batched Claude API call — returns insights + 30/90/180-day plans in English.
+ * Called via _triggerAI(); result is cached in window._aiResultEn.
  */
 async function callClaudeAI(data, kpis) {
   if (_isLocal) return null; // AI only available on deployed Vercel site
   const context = buildCreatorContext(data, kpis);
-  const isAr = i18n.current === 'ar';
-  const translateNote = isAr
-    ? `IMPORTANT: First compose every text field with the same warm, specific, encouraging English coaching tone shown in the examples. Then translate those composed texts into natural, fluent Arabic. The Arabic must feel as warm and detailed as the English — not stiff or shortened.`
-    : '';
   const prompt  = `You are a friendly and knowledgeable creator coach. Analyze the data below and return ONLY a raw JSON object — no markdown fences, no explanatory text before or after the JSON.
 
 CREATOR ANALYTICS:
 ${context}
 
-${translateNote}
-
-Return exactly this JSON structure (write all string values in ${isAr ? 'Arabic' : 'English'}):
+Return exactly this JSON structure (all string values in English):
 {
   "insights": [
     {
