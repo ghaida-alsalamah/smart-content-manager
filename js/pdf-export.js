@@ -116,8 +116,8 @@ window.downloadReport = async function () {
       y += 18;
     }
 
-    /* ── AI Insights ── */
-    const ai = window._aiResult;
+    /* ── AI Insights — always use English result; Arabic can't render in Helvetica ── */
+    const ai = window._aiResultEn || window._aiResult;
     if (ai && Array.isArray(ai.insights) && ai.insights.length > 0) {
       space(30);
       doc.setFontSize(13);
