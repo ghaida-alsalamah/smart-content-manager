@@ -244,9 +244,11 @@ function _renderCreatorResults(users, query, typeFilter) {
 
   const cards = users.map(u => {
     const types  = Array.isArray(u.contentTypes) ? u.contentTypes : [];
-    const typeTags = types.map(t =>
-      `<span class="creator-type-tag">${_escapeHtml(i18n.t('ctype.' + t) || t)}</span>`
-    ).join('');
+    const knownCtypes = ['entertainment','makeup','educational','fitness','gaming','food','travel','tech','other'];
+    const typeTags = types.map(t => {
+      const label = knownCtypes.includes(t) ? i18n.t('ctype.' + t) : t;
+      return `<span class="creator-type-tag">${_escapeHtml(label)}</span>`;
+    }).join('');
     return `
     <div class="creator-result-card card">
       <div class="creator-result-avatar">${_escapeHtml((u.name || '?')[0].toUpperCase())}</div>
