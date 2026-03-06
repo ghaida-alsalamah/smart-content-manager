@@ -10,7 +10,7 @@ Brands can also connect with creators through structured collaboration requests.
 
 ## Problem
 
-Many content creators rely on intuition when making decisions about:
+Many content creators rely on intuition when making decisions about:          
 
 - posting frequency
 - audience growth strategies
