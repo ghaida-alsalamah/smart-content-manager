@@ -397,6 +397,8 @@ function handleFile(file, mode) {
         document.getElementById('uploadSection').classList.add('hidden');
         document.getElementById('dashboardContent').classList.remove('hidden');
         document.getElementById('dashboardContent').classList.add('success-anim');
+        const pdfBtn = document.getElementById('downloadPdfBtn');
+        if (pdfBtn) pdfBtn.style.display = '';
         buildPlatformFilter(csvData);   // sets activePlatform to first platform BEFORE AI call
         renderOverview(getFilteredData());
         _triggerAI();                   // kick off AI for the active platform
