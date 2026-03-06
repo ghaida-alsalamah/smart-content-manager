@@ -835,6 +835,32 @@
   .brand-scores-row  { grid-template-columns: 1fr; }
 }
 
+/* ---------- Register page — compact on short viewports (laptops) ---------- */
+/* Allow the auth page to scroll instead of clipping the card at the top    */
+@media (max-height: 820px) {
+  .auth-page {
+    align-items: flex-start;
+    padding-top: 72px;
+    padding-bottom: 24px;
+  }
+}
+
+/* Tighten spacing so the full form fits without scrolling where possible   */
+@media (max-height: 760px) {
+  .auth-logo        { margin-bottom: 14px; }
+  .auth-logo svg    { width: 28px; height: 28px; }
+  .auth-logo-text   { font-size: 1rem; }
+  .auth-title       { font-size: 1.3rem; margin-bottom: 4px; }
+  .auth-sub         { margin-bottom: 16px; font-size: 0.85rem; }
+  .form-group       { margin-bottom: 10px; }
+  .role-card        { padding: 10px 10px; gap: 4px; }
+  .role-card .role-icon { font-size: 1.4rem; }
+  .role-grid        { gap: 8px; margin-bottom: 10px; }
+  .content-chip     { padding: 4px 10px; font-size: 0.75rem; }
+  .content-type-chips { gap: 6px; }
+  .auth-card        { padding: 24px 28px; }
+}
+
 /* ---------- Chatbot FAB + Panel ---------- */
 /* ── Chat FAB ───────────────────────────────────────────── */
 .chat-fab {
