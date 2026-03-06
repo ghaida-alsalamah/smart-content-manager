@@ -1,0 +1,13 @@
+{
+  "name": "smart-content-manager",
+  "version": "1.0.0",
+  "description": "Smart Content Manager - AI Analytics for Creators",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
