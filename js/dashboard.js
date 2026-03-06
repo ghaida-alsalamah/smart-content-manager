@@ -212,7 +212,12 @@ window.searchCreators = async function() {
       u.uid     = child.key; // include Firebase UID for collab request storage
       const nameMatch = !query || (u.name && u.name.toLowerCase().includes(query));
       const types     = Array.isArray(u.contentTypes) ? u.contentTypes : [];
-      const typeMatch = !typeFilter || types.includes(typeFilter);
+      const knownTypes = ['entertainment','makeup','educational','fitness','gaming','food','travel','tech'];
+      const typeMatch = !typeFilter || (
+        typeFilter === 'other'
+          ? types.some(t => !knownTypes.includes(t))
+          : types.includes(typeFilter)
+      );
       if (nameMatch && typeMatch) users.push(u);
     });
     _renderCreatorResults(users, query, typeFilter);
