@@ -91,8 +91,11 @@ function initRegister() {
       await cred.user.updateProfile({ displayName: name });
 
       // Collect selected content types (creators only)
+      const otherVal = (document.getElementById('otherTypeInput')?.value || '').trim();
       const contentTypes = selectedRole === 'creator'
-        ? [...document.querySelectorAll('.content-chip.selected')].map(c => c.dataset.type)
+        ? [...document.querySelectorAll('.content-chip.selected')].map(c =>
+            c.dataset.type === 'other' ? (otherVal || 'other') : c.dataset.type
+          )
         : [];
 
       // Save to Realtime Database — MUST complete before redirect

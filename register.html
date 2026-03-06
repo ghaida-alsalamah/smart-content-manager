@@ -82,6 +82,14 @@
           <button type="button" class="content-chip" data-type="tech"          data-i18n="ctype.tech">Tech</button>
           <button type="button" class="content-chip" data-type="other"         data-i18n="ctype.other">Other</button>
         </div>
+        <input
+          type="text"
+          id="otherTypeInput"
+          class="form-input"
+          placeholder="Describe your content type..."
+          maxlength="60"
+          style="display:none;margin-top:10px;"
+        />
       </div>
 
       <!-- Name -->
@@ -167,8 +175,16 @@
     i18n.init();
 
     // Content type chips toggle
+    const otherInput = document.getElementById('otherTypeInput');
     document.querySelectorAll('.content-chip').forEach(chip => {
-      chip.addEventListener('click', () => chip.classList.toggle('selected'));
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('selected');
+        if (chip.dataset.type === 'other') {
+          otherInput.style.display = chip.classList.contains('selected') ? 'block' : 'none';
+          if (chip.classList.contains('selected')) otherInput.focus();
+          else otherInput.value = '';
+        }
+      });
     });
 
     // Show/hide content types based on role selection
