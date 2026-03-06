@@ -692,7 +692,7 @@ function renderKPIs(data, kpis) {
   set('kpiGrowth',    (kpis.followerGrowth >= 0 ? '+' : '') + kpis.followerGrowth.toFixed(1) + '%');
   set('kpiFollowers', formatNum(kpis.totalFollowers));
   set('kpiPosts',     kpis.totalPosts.toString());
-  set('kpiRevenue',   kpis.avgMonthlyRevenue > 0 ? '$' + formatNum(Math.round(kpis.avgMonthlyRevenue)) : 'N/A');
+  set('kpiRevenue',   kpis.avgMonthlyRevenue > 0 ? '﷼' + formatNum(Math.round(kpis.avgMonthlyRevenue)) : 'N/A');
 
   const cv = kpis.revCV;
   const volEl   = document.getElementById('kpiVolatility');
@@ -815,7 +815,7 @@ function buildCreatorContext(data, kpis) {
     `Avg engagement rate: ${kpis.avgEngRate}%`,
     `Engagement trend: ${engTrend >= 0 ? '+' : ''}${engTrend}% over the full period`,
     `Follower growth: ${kpis.followerGrowth >= 0 ? '+' : ''}${kpis.followerGrowth}%`,
-    `Avg monthly revenue: $${Math.round(kpis.avgMonthlyRevenue)}`,
+    `Avg monthly revenue: ﷼${Math.round(kpis.avgMonthlyRevenue)}`,
     `Revenue volatility (CV): ${round(kpis.revCV, 1)}%`,
     `Total posts: ${kpis.totalPosts}`,
     `Avg posts per data point: ${round(kpis.totalPosts / data.length, 1)}`,
@@ -1359,7 +1359,7 @@ function renderCharts(data, kpis) {
         label: i18n.t('dash.chart.rev.label'), data: data.map(r => r.revenue),
         backgroundColor: data.map(r => r.revenue >= avgRev ? 'rgba(52,211,153,0.7)' : 'rgba(139,92,246,0.6)'),
         borderRadius: 6,
-      }], isDark, '$');
+      }], isDark, '﷼');
     } else {
       revPanel.classList.add('hidden');
     }
@@ -1385,7 +1385,7 @@ function makeChart(ctx, type, labels, datasets, isDark, unit) {
           callbacks: {
             label: ctx => {
               const v = ctx.parsed.y;
-              if (unit === '$') return ` Revenue: $${formatNum(v)}`;
+              if (unit === '﷼') return ` Revenue: ﷼${formatNum(v)}`;
               if (unit === '%') return ` ${ctx.dataset.label}: ${v}%`;
               return ` ${ctx.dataset.label}: ${formatNum(v)}`;
             }
@@ -1400,7 +1400,7 @@ function makeChart(ctx, type, labels, datasets, isDark, unit) {
         x: { grid: { color: gridColor }, ticks: { maxRotation: 40, font: { size: 11 } } },
         y: {
           grid: { color: gridColor }, beginAtZero: type === 'bar',
-          ticks: { callback: v => unit === '$' ? '$' + formatNum(v) : v + unit, font: { size: 11 } },
+          ticks: { callback: v => unit === '﷼' ? '﷼' + formatNum(v) : v + unit, font: { size: 11 } },
         },
       },
     }
@@ -1558,8 +1558,8 @@ window.renderFuturePlanForPeriod = function(period) {
       </div>
       ${plan.revenueProjection ? `<div class="proj-item">
         <span class="proj-label">${i18n.t('plan.projected.revenue')}</span>
-        <span class="proj-value">$${formatNum(plan.revenueProjection.monthly)}<span style="font-size:.8rem;font-weight:500;opacity:.7">/mo</span></span>
-        <span class="proj-sub">${i18n.t('plan.range')}: $${formatNum(plan.revenueProjection.min)} – $${formatNum(plan.revenueProjection.max)}</span>
+        <span class="proj-value">﷼${formatNum(plan.revenueProjection.monthly)}<span style="font-size:.8rem;font-weight:500;opacity:.7">/mo</span></span>
+        <span class="proj-sub">${i18n.t('plan.range')}: ﷼${formatNum(plan.revenueProjection.min)} – ﷼${formatNum(plan.revenueProjection.max)}</span>
       </div>` : ''}
     </div>
 
@@ -1748,11 +1748,11 @@ function renderSimulationResult(r) {
   const revHTML = r.simRevenue ? `
     <div class="sim-compare-item">
       <div class="sim-label">${i18n.t('plan.projected.revenue')}</div>
-      <div class="sim-before">$${formatNum(baseline.revenueProjection.monthly)}</div>
+      <div class="sim-before">﷼${formatNum(baseline.revenueProjection.monthly)}</div>
       <div class="sim-arrow">→</div>
       <div class="sim-after" style="color:${r.simRevenue.delta >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'};">
-        $${formatNum(r.simRevenue.monthly)}
-        <span class="sim-delta">(${r.simRevenue.delta >= 0 ? '+' : ''}$${formatNum(r.simRevenue.delta)})</span>
+        ﷼${formatNum(r.simRevenue.monthly)}
+        <span class="sim-delta">(${r.simRevenue.delta >= 0 ? '+' : ''}﷼${formatNum(r.simRevenue.delta)})</span>
       </div>
     </div>` : '';
 
@@ -1826,15 +1826,15 @@ function renderAdPricing(data, kpis) {
         <div class="price-range">
           <div class="price-tier">
             <div class="price-tier-label">${i18n.t('pricing.min.label')}</div>
-            <div class="price-tier-value">$${formatNum(p.minPrice)}</div>
+            <div class="price-tier-value">﷼${formatNum(p.minPrice)}</div>
           </div>
           <div class="price-tier ideal">
             <div class="price-tier-label">${i18n.t('pricing.ideal.label')}</div>
-            <div class="price-tier-value">$${formatNum(p.idealPrice)}</div>
+            <div class="price-tier-value">﷼${formatNum(p.idealPrice)}</div>
           </div>
           <div class="price-tier">
             <div class="price-tier-label">${i18n.t('pricing.premium.label')}</div>
-            <div class="price-tier-value">$${formatNum(p.premiumPrice)}</div>
+            <div class="price-tier-value">﷼${formatNum(p.premiumPrice)}</div>
           </div>
         </div>
 
@@ -1849,24 +1849,24 @@ function renderAdPricing(data, kpis) {
         <div class="pricing-breakdown">
           <div class="pricing-breakdown-title">${i18n.t('pricing.breakdown.title')}</div>
           <div class="pricing-breakdown-row">
-            <span>${i18n.t('pricing.base.price')} (${formatNum(p.followers)} followers × $${p.cpmRate} CPM ÷ 1K)</span>
-            <span>$${formatNum(p.base)}</span>
+            <span>${i18n.t('pricing.base.price')} (${formatNum(p.followers)} followers × ﷼${p.cpmRate} CPM ÷ 1K)</span>
+            <span>﷼${formatNum(p.base)}</span>
           </div>
           <div class="pricing-breakdown-row">
             <span>${i18n.t('pricing.eng.mult')} (${p.engMultiplier}×) — ${p.tier}</span>
-            <span>${p.engMultiplier >= 1 ? '+' : ''}$${formatNum(Math.round(Math.abs(p.engMultiplier - 1) * p.base))}</span>
+            <span>${p.engMultiplier >= 1 ? '+' : ''}﷼${formatNum(Math.round(Math.abs(p.engMultiplier - 1) * p.base))}</span>
           </div>
           <div class="pricing-breakdown-row">
             <span>${i18n.t('pricing.growth.factor.row')} (${p.growthFactor}×) — ${gfLabel}</span>
-            <span>${p.growthFactor >= 1 ? '+' : '-'}$${formatNum(Math.round(Math.abs(p.growthFactor - 1) * p.base * p.engMultiplier))}</span>
+            <span>${p.growthFactor >= 1 ? '+' : '-'}﷼${formatNum(Math.round(Math.abs(p.growthFactor - 1) * p.base * p.engMultiplier))}</span>
           </div>
           <div class="pricing-breakdown-row">
             <span>${i18n.t('pricing.stability.factor')} (${p.stabilityFactor}×) — ${sfLabel}</span>
-            <span>${p.stabilityFactor >= 1 ? '+' : '-'}$${formatNum(Math.round(Math.abs(p.stabilityFactor - 1) * p.base * p.engMultiplier * p.growthFactor))}</span>
+            <span>${p.stabilityFactor >= 1 ? '+' : '-'}﷼${formatNum(Math.round(Math.abs(p.stabilityFactor - 1) * p.base * p.engMultiplier * p.growthFactor))}</span>
           </div>
           <div class="pricing-breakdown-row total">
             <span>${i18n.t('pricing.adjusted.base')}</span>
-            <span>$${formatNum(p.adjusted)}</span>
+            <span>﷼${formatNum(p.adjusted)}</span>
           </div>
           <div class="pricing-breakdown-row" style="font-size:0.75rem;color:var(--text-muted);padding-top:4px;">
             <span>Min = ×0.65 &nbsp;·&nbsp; Ideal = ×1.0 &nbsp;·&nbsp; Premium = ×1.55</span>
@@ -1895,7 +1895,7 @@ function renderAdPricing(data, kpis) {
         <div class="card">
           <div class="plan-card-label">${i18n.t('pricing.current.rev')}</div>
           <div style="font-size:1.4rem;font-weight:800;margin:8px 0;">
-            ${p.avgRevPerPost !== null ? '$' + Math.round(p.avgRevPerPost) : i18n.t('pricing.no.data')}
+            ${p.avgRevPerPost !== null ? '﷼' + Math.round(p.avgRevPerPost) : i18n.t('pricing.no.data')}
           </div>
           <div style="font-size:0.82rem;color:var(--text-secondary);">
             ${p.avgRevPerPost !== null
@@ -2057,9 +2057,9 @@ Hi [Creator Name],
 I evaluated your analytics profile and I'm interested in exploring a potential collaboration. Your engagement rate of ${kpis.avgEngRate.toFixed(1)}% (${pricing.tier}) and follower growth of ${kpis.followerGrowth > 0 ? '+' : ''}${kpis.followerGrowth.toFixed(1)}% stood out.
 
 Based on our evaluation, we'd like to propose:
-• Sponsored post: $${pricing.minPrice}–$${pricing.idealPrice} per post
-• Content series (3 posts): $${Math.round(pricing.idealPrice * 2.6)}
-• Long-term retainer (monthly): $${Math.round(pricing.idealPrice * 3.5)}
+• Sponsored post: ﷼${pricing.minPrice}–﷼${pricing.idealPrice} per post
+• Content series (3 posts): ﷼${Math.round(pricing.idealPrice * 2.6)}
+• Long-term retainer (monthly): ﷼${Math.round(pricing.idealPrice * 3.5)}
 
 Please reply to discuss details, deliverables, and timelines.
 
@@ -2119,9 +2119,9 @@ Best regards,
         <div class="brand-report-card">
           <div class="settings-card-title">Pricing Recommendation</div>
           <div class="brand-metric-row"><span class="brand-metric-label">Classification</span><span class="brand-metric-value">${pricing.classification}</span></div>
-          <div class="brand-metric-row"><span class="brand-metric-label">Min Budget / Post</span><span class="brand-metric-value">$${formatNum(pricing.minPrice)}</span></div>
-          <div class="brand-metric-row"><span class="brand-metric-label">Ideal Budget / Post</span><span class="brand-metric-value" style="color:var(--accent-purple);">$${formatNum(pricing.idealPrice)}</span></div>
-          <div class="brand-metric-row"><span class="brand-metric-label">Premium Budget / Post</span><span class="brand-metric-value">$${formatNum(pricing.premiumPrice)}</span></div>
+          <div class="brand-metric-row"><span class="brand-metric-label">Min Budget / Post</span><span class="brand-metric-value">﷼${formatNum(pricing.minPrice)}</span></div>
+          <div class="brand-metric-row"><span class="brand-metric-label">Ideal Budget / Post</span><span class="brand-metric-value" style="color:var(--accent-purple);">﷼${formatNum(pricing.idealPrice)}</span></div>
+          <div class="brand-metric-row"><span class="brand-metric-label">Premium Budget / Post</span><span class="brand-metric-value">﷼${formatNum(pricing.premiumPrice)}</span></div>
           <div class="brand-metric-row"><span class="brand-metric-label">Engagement ×</span><span class="brand-metric-value">${pricing.engMultiplier}×</span></div>
           <div class="brand-metric-row"><span class="brand-metric-label">Growth ×</span><span class="brand-metric-value">${pricing.growthFactor}×</span></div>
           <div class="brand-metric-row"><span class="brand-metric-label">Stability ×</span><span class="brand-metric-value">${pricing.stabilityFactor}×</span></div>
@@ -2796,8 +2796,8 @@ function _localChat(text) {
     const stab   = vol < 20 ? (isAr ? 'مستقرة' : 'stable') : vol < 40 ? (isAr ? 'متذبذبة' : 'volatile') : (isAr ? 'غير مستقرة' : 'highly volatile');
     const revIns = insights.find(i => i.id === 'revenue' || i.id === 'rev-dependency');
     let msg = isAr
-      ? `متوسط الإيرادات الشهرية: $${formatNum(Math.round(kpis.avgMonthlyRevenue))}.\nتقلب الإيرادات: ${vol}% (${stab}).`
-      : `Avg monthly revenue: $${formatNum(Math.round(kpis.avgMonthlyRevenue))}.\nRevenue volatility: ${vol}% (${stab}).`;
+      ? `متوسط الإيرادات الشهرية: ﷼${formatNum(Math.round(kpis.avgMonthlyRevenue))}.\nتقلب الإيرادات: ${vol}% (${stab}).`
+      : `Avg monthly revenue: ﷼${formatNum(Math.round(kpis.avgMonthlyRevenue))}.\nRevenue volatility: ${vol}% (${stab}).`;
     if (revIns) msg += '\n\n' + i18n.t(revIns.bodyKey, revIns.bodyVars) + '\n→ ' + i18n.t(revIns.recKey);
     else        msg += vol < 20 ? (isAr ? '\n\nإيراداتك مستقرة — مؤشر ممتاز.' : '\n\nRevenue is stable — great sign of recurring partnerships.') : (isAr ? '\n\nاسأل "اشرح أكثر" لاستراتيجيات تثبيت الإيراد.' : '\n\nAsk "explain it" for revenue stabilization strategies.');
     return msg;
