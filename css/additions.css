@@ -409,6 +409,35 @@
   background: var(--accent-blue); flex-shrink: 0; margin-top: 5px;
 }
 
+/* ---------- Compact Projections Summary ---------- */
+.plan-projections-summary {
+  display: flex; flex-wrap: wrap; gap: 0;
+  background: rgba(0,0,0,0.1); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); margin-bottom: 16px; overflow: hidden;
+}
+.proj-item {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 14px 20px; flex: 1; min-width: 120px;
+  border-right: 1px solid var(--border);
+}
+.proj-item:last-child { border-right: none; }
+.proj-label {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.09em; color: var(--text-muted);
+}
+.proj-value {
+  font-size: 1.15rem; font-weight: 700; line-height: 1.2; color: var(--text-primary);
+}
+.proj-value--sm { font-size: 0.9rem; }
+.proj-sub { font-size: 0.75rem; color: var(--text-secondary); }
+[dir="rtl"] .proj-item { border-right: none; border-left: 1px solid var(--border); text-align: right; }
+[dir="rtl"] .proj-item:last-child { border-left: none; }
+@media (max-width: 600px) {
+  .proj-item { min-width: 45%; border-right: none; border-bottom: 1px solid var(--border); }
+  .proj-item:last-child { border-bottom: none; }
+  [dir="rtl"] .proj-item { border-left: none; }
+}
+
 /* ---------- Projection Confidence Row ---------- */
 .plan-confidence-row {
   display: flex; align-items: center; gap: 12px;

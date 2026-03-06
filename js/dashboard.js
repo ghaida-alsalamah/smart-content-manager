@@ -1456,119 +1456,120 @@ window.renderFuturePlanForPeriod = function(period) {
 
   const riskClass = plan.riskLevel === 'High' ? 'risk-high' : plan.riskLevel === 'Medium' ? 'risk-medium' : 'risk-low';
   const riskLabel = plan.riskLevel === 'High' ? i18n.t('risk.high') : plan.riskLevel === 'Medium' ? i18n.t('risk.medium') : i18n.t('risk.low');
-  const revHTML = plan.revenueProjection
-    ? `<div class="plan-card">
-        <div class="plan-card-label">${i18n.t('plan.projected.revenue')}</div>
-        <div class="plan-card-value">$${formatNum(plan.revenueProjection.monthly)}<span style="font-size:1rem;font-weight:500;color:var(--text-muted)">/mo</span></div>
-        <div class="plan-card-sub">${i18n.t('plan.range')}: $${formatNum(plan.revenueProjection.min)} – $${formatNum(plan.revenueProjection.max)}</div>
-       </div>`
-    : `<div class="plan-card"><div class="plan-card-label">${i18n.t('plan.projected.revenue')}</div><div class="plan-card-sub" style="margin-top:8px;">${i18n.t('plan.no.revenue.range')}</div></div>`;
+
+  // --- AI Strategy block (IIFE) ---
+  const pKey      = period.toString();
+  const aiPlan    = window._aiResult && window._aiResult.plans   && window._aiResult.plans[pKey];
+  const aiActions = window._aiResult && window._aiResult.actions && window._aiResult.actions[pKey];
+  const periodKey   = period === 30 ? 'ai.period.30' : period === 90 ? 'ai.period.90' : 'ai.period.180';
+  const periodLabel = i18n.t(periodKey);
+
+  const aiStrategyHTML = (() => {
+    if (window._aiLoading) {
+      return `<div class="card ai-strategy-card" style="margin-bottom:20px;">
+        <div class="section-heading" style="margin-bottom:16px;">
+          <h2 style="font-size:1rem;">${i18n.t('ai.strategy.title')} — ${periodLabel}</h2>
+          <div class="line"></div>
+        </div>
+        <div class="ai-loading-inline"><div class="ai-spinner-sm"></div><span>${i18n.t('ai.strategy.loading')}</span></div>
+      </div>`;
+    }
+    if (aiPlan) {
+      return `<div class="card ai-strategy-card" style="margin-bottom:20px;">
+        <div class="section-heading" style="margin-bottom:16px;">
+          <h2 style="font-size:1rem;">${i18n.t('ai.strategy.title')} — ${periodLabel}</h2>
+          <div class="line"></div>
+        </div>
+        <p class="ai-strategy-body">${aiPlan}</p>
+        <div class="ai-insight-footer" style="margin-top:12px;">${i18n.t('ai.footer')}</div>
+      </div>`;
+    }
+    if (window._aiFailed) {
+      return `<div class="card ai-strategy-card" style="margin-bottom:20px;">
+        <div class="section-heading" style="margin-bottom:16px;">
+          <h2 style="font-size:1rem;">${i18n.t('ai.strategy.title')} — ${periodLabel}</h2>
+          <div class="line"></div>
+        </div>
+        <p class="ai-strategy-body" style="color:var(--text-secondary);">${i18n.t('ai.retry')}</p>
+      </div>`;
+    }
+    return '';
+  })();
+
+  const aiActionsHTML = (() => {
+    if (window._aiLoading) {
+      return `<div class="card" style="margin-bottom:20px;">
+        <div class="section-heading" style="margin-bottom:16px;">
+          <h2 style="font-size:1rem;">${i18n.t('plan.action.title')}</h2>
+          <div class="line"></div>
+        </div>
+        <div class="ai-loading-inline"><div class="ai-spinner-sm"></div><span>${i18n.t('ai.strategy.loading')}</span></div>
+      </div>`;
+    }
+    if (aiActions && aiActions.length > 0) {
+      return `<div class="card" style="margin-bottom:20px;">
+        <div class="section-heading" style="margin-bottom:16px;">
+          <h2 style="font-size:1rem;">${i18n.t('plan.action.title')}</h2>
+          <div class="line"></div>
+        </div>
+        <div class="action-plan-list">
+          ${aiActions.map(a => `<div class="action-item"><div class="action-dot"></div><span>${a}</span></div>`).join('')}
+        </div>
+        <div class="ai-insight-footer" style="margin-top:12px;">${i18n.t('ai.footer')}</div>
+      </div>`;
+    }
+    if (window._aiFailed) {
+      return `<div class="card" style="margin-bottom:20px;">
+        <div class="section-heading" style="margin-bottom:16px;">
+          <h2 style="font-size:1rem;">${i18n.t('plan.action.title')}</h2>
+          <div class="line"></div>
+        </div>
+        <p style="color:var(--text-secondary);padding:8px 0;">${i18n.t('ai.retry')}</p>
+      </div>`;
+    }
+    return '';
+  })();
 
   el.innerHTML = `
-    <div class="plan-confidence-row">
+    ${aiStrategyHTML}
+    ${aiActionsHTML}
+
+    <div class="plan-projections-summary">
+      <div class="proj-item">
+        <span class="proj-label">${i18n.t('plan.expected.growth')}</span>
+        <span class="proj-value" style="color:${plan.expectedGrowthPercent >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+          ${plan.expectedGrowthPercent >= 0 ? '+' : ''}${plan.expectedGrowthPercent}%
+        </span>
+        <span class="proj-sub">${i18n.t('plan.projected.over')} ${plan.months} ${i18n.t('plan.months')}</span>
+      </div>
+      <div class="proj-item">
+        <span class="proj-label">${i18n.t('plan.followers')}</span>
+        <span class="proj-value">${formatNum(plan.projectedFollowers)}</span>
+        <span class="proj-sub">${i18n.t('plan.from.current')} ${formatNum(data[data.length - 1].followers)}</span>
+      </div>
+      <div class="proj-item">
+        <span class="proj-label">${i18n.t('plan.risk.level')}</span>
+        <span class="proj-value"><span class="risk-badge ${riskClass}">${riskLabel}</span></span>
+        <span class="proj-sub">${i18n.t('plan.score')}: ${plan.riskScore}/5</span>
+      </div>
+      <div class="proj-item">
+        <span class="proj-label">${i18n.t('plan.rec.posting')}</span>
+        <span class="proj-value proj-value--sm">${plan.recommendedFreq}</span>
+      </div>
+      ${plan.revenueProjection ? `<div class="proj-item">
+        <span class="proj-label">${i18n.t('plan.projected.revenue')}</span>
+        <span class="proj-value">$${formatNum(plan.revenueProjection.monthly)}<span style="font-size:.8rem;font-weight:500;opacity:.7">/mo</span></span>
+        <span class="proj-sub">${i18n.t('plan.range')}: $${formatNum(plan.revenueProjection.min)} – $${formatNum(plan.revenueProjection.max)}</span>
+      </div>` : ''}
+    </div>
+
+    <div class="plan-confidence-row" style="margin-bottom:12px;">
       <div class="confidence-label-text">${i18n.t('plan.confidence')}</div>
       <div class="confidence-bar" style="flex:1;max-width:220px;">
         <div class="confidence-fill" style="width:${conf.score}%;background:${conf.color};"></div>
       </div>
       <div class="confidence-score-text" style="color:${conf.color};" title="${conf.tooltip}">${conf.score}% — ${conf.label}</div>
     </div>
-
-    <div class="future-plan-grid">
-      <div class="plan-card highlight">
-        <div class="plan-card-label">${i18n.t('plan.expected.growth')}</div>
-        <div class="plan-card-value" style="color:${plan.expectedGrowthPercent >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
-          ${plan.expectedGrowthPercent >= 0 ? '+' : ''}${plan.expectedGrowthPercent}%
-        </div>
-        <div class="plan-card-sub">${i18n.t('plan.projected.over')} ${plan.months} ${i18n.t('plan.months')}</div>
-      </div>
-      <div class="plan-card">
-        <div class="plan-card-label">${i18n.t('plan.followers')}</div>
-        <div class="plan-card-value">${formatNum(plan.projectedFollowers)}</div>
-        <div class="plan-card-sub">${i18n.t('plan.from.current')} ${formatNum(data[data.length - 1].followers)}</div>
-      </div>
-      <div class="plan-card">
-        <div class="plan-card-label">${i18n.t('plan.risk.level')}</div>
-        <div style="margin:8px 0;"><span class="risk-badge ${riskClass}">${riskLabel} ${i18n.t('plan.risk.suffix')}</span></div>
-        <div class="plan-card-sub">${i18n.t('plan.score')}: ${plan.riskScore}/5</div>
-      </div>
-      <div class="plan-card">
-        <div class="plan-card-label">${i18n.t('plan.rec.posting')}</div>
-        <div class="plan-card-value" style="font-size:1.15rem;line-height:1.3;margin-top:4px;">${plan.recommendedFreq}</div>
-      </div>
-      ${revHTML}
-    </div>
-
-    ${(() => {
-      const pKey = period.toString();
-      const aiPlan = window._aiResult && window._aiResult.plans && window._aiResult.plans[pKey];
-      const periodKey = period === 30 ? 'ai.period.30' : period === 90 ? 'ai.period.90' : 'ai.period.180';
-      const periodLabel = i18n.t(periodKey);
-      if (window._aiLoading) {
-        return `<div class="card ai-strategy-card" style="margin-bottom:20px;">
-          <div class="section-heading" style="margin-bottom:16px;">
-            <h2 style="font-size:1rem;">${i18n.t('ai.strategy.title')} — ${periodLabel}</h2>
-            <div class="line"></div>
-          </div>
-          <div class="ai-loading-inline"><div class="ai-spinner-sm"></div><span>${i18n.t('ai.strategy.loading')}</span></div>
-        </div>`;
-      }
-      if (aiPlan) {
-        return `<div class="card ai-strategy-card" style="margin-bottom:20px;">
-          <div class="section-heading" style="margin-bottom:16px;">
-            <h2 style="font-size:1rem;">${i18n.t('ai.strategy.title')} — ${periodLabel}</h2>
-            <div class="line"></div>
-          </div>
-          <p class="ai-strategy-body">${aiPlan}</p>
-          <div class="ai-insight-footer" style="margin-top:12px;">${i18n.t('ai.footer')}</div>
-        </div>`;
-      }
-      if (window._aiFailed) {
-        return `<div class="card ai-strategy-card" style="margin-bottom:20px;">
-          <div class="section-heading" style="margin-bottom:16px;">
-            <h2 style="font-size:1rem;">${i18n.t('ai.strategy.title')} — ${periodLabel}</h2>
-            <div class="line"></div>
-          </div>
-          <p class="ai-strategy-body" style="color:var(--text-secondary);">${i18n.t('ai.retry')}</p>
-        </div>`;
-      }
-      return '';
-    })()}
-
-    ${(() => {
-      const pKey = period.toString();
-      const aiActions = window._aiResult && window._aiResult.actions && window._aiResult.actions[pKey];
-      if (window._aiLoading) {
-        return `<div class="card" style="margin-bottom:20px;">
-          <div class="section-heading" style="margin-bottom:16px;">
-            <h2 style="font-size:1rem;">${i18n.t('plan.action.title')}</h2>
-            <div class="line"></div>
-          </div>
-          <div class="ai-loading-inline"><div class="ai-spinner-sm"></div><span>${i18n.t('ai.strategy.loading')}</span></div>
-        </div>`;
-      }
-      if (aiActions && aiActions.length > 0) {
-        return `<div class="card" style="margin-bottom:20px;">
-          <div class="section-heading" style="margin-bottom:16px;">
-            <h2 style="font-size:1rem;">${i18n.t('plan.action.title')}</h2>
-            <div class="line"></div>
-          </div>
-          <div class="action-plan-list">
-            ${aiActions.map(a => `<div class="action-item"><div class="action-dot"></div><span>${a}</span></div>`).join('')}
-          </div>
-          <div class="ai-insight-footer" style="margin-top:12px;">${i18n.t('ai.footer')}</div>
-        </div>`;
-      }
-      if (window._aiFailed) {
-        return `<div class="card" style="margin-bottom:20px;">
-          <div class="section-heading" style="margin-bottom:16px;">
-            <h2 style="font-size:1rem;">${i18n.t('plan.action.title')}</h2>
-            <div class="line"></div>
-          </div>
-          <p style="color:var(--text-secondary);padding:8px 0;">${i18n.t('ai.retry')}</p>
-        </div>`;
-      }
-      return '';
-    })()}
 
     <div class="plan-explanation">
       <div class="plan-explanation-header" onclick="this.parentElement.classList.toggle('open')">
