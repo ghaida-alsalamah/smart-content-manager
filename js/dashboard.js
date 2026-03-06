@@ -862,40 +862,44 @@ async function callClaudeAI(data, kpis) {
   if (_isLocal) return null; // AI only available on deployed Vercel site
   const context = buildCreatorContext(data, kpis);
   const isAr = i18n.current === 'ar';
-  const lang = isAr ? 'Arabic' : 'English';
+  const translateNote = isAr
+    ? `IMPORTANT: First compose every text field with the same warm, specific, encouraging English coaching tone shown in the examples. Then translate those composed texts into natural, fluent Arabic. The Arabic must feel as warm and detailed as the English — not stiff or shortened.`
+    : '';
   const prompt  = `You are a friendly and knowledgeable creator coach. Analyze the data below and return ONLY a raw JSON object — no markdown fences, no explanatory text before or after the JSON.
 
 CREATOR ANALYTICS:
 ${context}
 
-Return exactly this JSON structure (write all string values in ${lang}):
+${translateNote}
+
+Return exactly this JSON structure (write all string values in ${isAr ? 'Arabic' : 'English'}):
 {
   "insights": [
     {
       "id": "short-english-slug",
       "severity": "high|medium|low",
-      "title": "[${lang}] Clear, encouraging 5-8 word title",
-      "explanation": "[${lang}] 1-2 friendly sentences referencing specific numbers",
-      "action": "[${lang}] One clear, specific next step the creator can take today"
+      "title": "Clear, encouraging 5-8 word title",
+      "explanation": "1-2 friendly sentences referencing specific numbers from the data",
+      "action": "One clear, specific next step the creator can take today"
     }
   ],
   "plans": {
-    "30": "[${lang}] 2-3 warm, motivating sentences for a 30-day plan",
-    "90": "[${lang}] 2-3 sentences for a 90-day plan",
-    "180": "[${lang}] 2-3 sentences for a 6-month vision"
+    "30": "2-3 warm, motivating sentences for a 30-day plan with concrete direction",
+    "90": "2-3 sentences for a 90-day plan with measurable milestones",
+    "180": "2-3 sentences for a 6-month vision with aspirational but realistic goals"
   },
   "actions": {
-    "30": ["[${lang}] 3 to 5 specific actionable bullet points for the next 30 days"],
-    "90": ["[${lang}] 3 to 5 action steps for the 90-day period"],
-    "180": ["[${lang}] 3 to 5 strategic steps for the 6-month horizon"]
+    "30": ["3 to 5 specific, actionable bullet points for the next 30 days"],
+    "90": ["3 to 5 action steps with clear outcomes for the 90-day period"],
+    "180": ["3 to 5 strategic steps that build toward the 6-month vision"]
   },
-  "summary": "[${lang}] One warm sentence summarizing overall performance"
+  "summary": "One warm, specific sentence summarizing overall performance using actual numbers"
 }
 
 Rules:
 - 2 to 4 insights maximum. Always include at least one positive signal.
 - Keep "id" as a short English slug. Keep "severity" as "high", "medium", or "low".
-- Reference actual numbers from the data in every explanation.
+- Reference actual numbers from the data in every explanation and summary.
 - Return ONLY the JSON object — nothing else.`;
 
   const res = await fetch(_claudeURL, {
