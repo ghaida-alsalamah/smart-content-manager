@@ -12,9 +12,9 @@ window.downloadReport = async function () {
   if (btn) { btn.disabled = true; btn.textContent = i18n.t('pdf.generating') || 'Generating...'; }
 
   try {
-    /* ── Ensure charts are rendered even if user hasn't visited Charts section ── */
+    /* ── Ensure charts are rendered; disable animation so canvas is fully painted ── */
     const hasCharts = window.charts && Object.values(window.charts).some(c => c);
-    if (!hasCharts && typeof getFilteredData === 'function' && typeof renderCharts === 'function') {
+    if (typeof getFilteredData === 'function' && typeof renderCharts === 'function') {
       const data = getFilteredData();
       const kpis = computeKPIs(data);
       if (data.length > 0) {
@@ -22,11 +22,19 @@ window.downloadReport = async function () {
         const cont = document.getElementById('chartsContent');
         const empt = document.getElementById('chartsEmpty');
         const wasHidden = sec && sec.classList.contains('hidden');
-        if (sec)  sec.classList.remove('hidden');
+
+        if (sec)  { sec.classList.remove('hidden'); sec.style.position = 'fixed'; sec.style.left = '-9999px'; }
         if (cont) cont.classList.remove('hidden');
         if (empt) empt.classList.add('hidden');
+
+        const prevAnim = Chart.defaults.animation;
+        Chart.defaults.animation = false;
         renderCharts(data, kpis);
-        await new Promise(r => requestAnimationFrame(() => setTimeout(r, 150)));
+        Chart.defaults.animation = prevAnim;
+
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+        if (sec) { sec.style.position = ''; sec.style.left = ''; }
         if (wasHidden && sec) sec.classList.add('hidden');
       }
     }
