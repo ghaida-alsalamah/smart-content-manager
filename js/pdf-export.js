@@ -30,9 +30,12 @@ window.downloadReport = async function () {
     function clean(str) {
       if (!str) return '';
       return String(str)
-        .replace(/[\u{1F000}-\u{1FFFF}]/gu, '')
-        .replace(/[\u{2600}-\u{27BF}]/gu, '')
-        .replace(/[^\u0020-\u007E\u00A0-\u00FF]/g, '')
+        .replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'")
+        .replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"')
+        .replace(/[\u2013\u2014\u2015]/g, '-')
+        .replace(/\u2026/g, '...')
+        .replace(/[\u2022\u2023\u2043\u2219\u25CF\u25AA]/g, '*')
+        .replace(/[^\x20-\x7E]/g, '')
         .replace(/\s+/g, ' ')
         .trim();
     }
@@ -60,9 +63,9 @@ window.downloadReport = async function () {
     doc.setTextColor(MUTED);
     doc.text('Analytics Report  ·  ' + new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }), M, y + 34);
 
-    const creatorName = (document.getElementById('sidebarName') || {}).textContent || '';
-    if (creatorName.trim()) {
-      doc.text('Creator: ' + creatorName.trim(), PW - M, y + 34, { align: 'right' });
+    const creatorName = clean((document.getElementById('sidebarName') || {}).textContent || '');
+    if (creatorName) {
+      doc.text('Creator: ' + creatorName, PW - M, y + 34, { align: 'right' });
     }
 
     y += 50;
