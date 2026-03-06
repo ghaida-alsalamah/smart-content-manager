@@ -1,309 +1,203 @@
 /* ============================================================
-   pdf-export.js — Download creator analytics report as PDF
-   Uses jsPDF (text/layout) + Chart.js toBase64Image() for charts
+   pdf-export.js — Simple report: charts + AI insights
    ============================================================ */
 
 window.downloadReport = async function () {
   if (typeof window.jspdf === 'undefined') {
-    showToast('PDF library not loaded yet — please try again in a moment.', 'error');
+    showToast('PDF library not loaded yet — please try again.', 'error');
     return;
   }
-
-  const { jsPDF } = window.jspdf;
 
   const btn = document.getElementById('downloadPdfBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Generating…'; }
 
   try {
+    const { jsPDF } = window.jspdf;
     const doc    = new jsPDF({ unit: 'pt', format: 'a4' });
     const PW     = doc.internal.pageSize.getWidth();
     const PH     = doc.internal.pageSize.getHeight();
-    const MARGIN = 40;
-    const INNER  = PW - MARGIN * 2;
-    let y        = MARGIN;
+    const M      = 40;
+    const INNER  = PW - M * 2;
+    let y        = M;
 
-    const isDark  = document.documentElement.getAttribute('data-theme') === 'dark';
-    const BG      = isDark ? '#0D1117' : '#FFFFFF';
-    const FG      = isDark ? '#EEF2FF' : '#1E293B';
-    const MUTED   = isDark ? '#8899BB' : '#64748B';
-    const ACCENT  = '#8B5CF6';
-    const GREEN   = '#34D399';
-    const RED     = '#F87171';
+    const PURPLE = '#8B5CF6';
+    const FG     = '#1E293B';
+    const MUTED  = '#64748B';
+    const GREEN  = '#16A34A';
+    const ORANGE = '#D97706';
+    const RED    = '#DC2626';
 
-    function setFont(size, style, color) {
-      doc.setFontSize(size);
-      doc.setFont('helvetica', style || 'normal');
-      doc.setTextColor(color || FG);
-    }
-
-    function addPage() {
+    function newPage() {
       doc.addPage();
-      y = MARGIN;
-      doc.setFillColor(BG);
-      doc.rect(0, 0, PW, PH, 'F');
+      y = M;
     }
 
-    function checkSpace(needed) {
-      if (y + needed > PH - MARGIN) addPage();
+    function space(need) {
+      if (y + need > PH - M) newPage();
     }
 
-    function hRule(color, thickness) {
-      doc.setDrawColor(color || ACCENT);
-      doc.setLineWidth(thickness || 0.5);
-      doc.line(MARGIN, y, PW - MARGIN, y);
-      y += 12;
+    /* ── Header ── */
+    doc.setFillColor(PURPLE);
+    doc.rect(0, 0, PW, 5, 'F');
+
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(FG);
+    doc.text('Smart Content Manager', M, y + 18);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(MUTED);
+    doc.text('Analytics Report  ·  ' + new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }), M, y + 34);
+
+    const creatorName = (document.getElementById('sidebarName') || {}).textContent || '';
+    if (creatorName.trim()) {
+      doc.text('Creator: ' + creatorName.trim(), PW - M, y + 34, { align: 'right' });
     }
 
-    function textLine(text, size, style, color, indent) {
-      setFont(size || 11, style || 'normal', color);
-      const x = MARGIN + (indent || 0);
-      doc.text(String(text), x, y);
-      y += (size || 11) * 1.5;
-    }
-
-    function wrappedText(text, size, color, indent) {
-      setFont(size || 10, 'normal', color || MUTED);
-      const x     = MARGIN + (indent || 0);
-      const lines = doc.splitTextToSize(String(text), INNER - (indent || 0));
-      lines.forEach(line => {
-        checkSpace(14);
-        doc.text(line, x, y);
-        y += (size || 10) * 1.5;
-      });
-    }
-
-    function kpiBox(label, value, x, bw, color) {
-      doc.setFillColor(isDark ? '#1A2035' : '#F1F5F9');
-      doc.roundedRect(x, y, bw, 48, 4, 4, 'F');
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(MUTED);
-      doc.text(String(label).toUpperCase(), x + 8, y + 14);
-      doc.setFontSize(16);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(color || FG);
-      doc.text(String(value), x + 8, y + 36);
-    }
-
-    function readEl(id) {
-      const el = document.getElementById(id);
-      return el ? el.textContent.trim() : '—';
-    }
-
-    /* ── Page background ── */
-    doc.setFillColor(BG);
-    doc.rect(0, 0, PW, PH, 'F');
-
-    /* ── HEADER ── */
-    doc.setFillColor(ACCENT);
-    doc.rect(0, 0, PW, 6, 'F');
-    y = 30;
-
-    setFont(22, 'bold', FG);
-    doc.text('Smart Content Manager', MARGIN, y);
+    y += 50;
+    doc.setDrawColor(PURPLE);
+    doc.setLineWidth(0.5);
+    doc.line(M, y, PW - M, y);
     y += 18;
-    setFont(11, 'normal', MUTED);
-    doc.text('Creator Analytics Report', MARGIN, y);
 
-    const now = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-    doc.text(now, PW - MARGIN, y, { align: 'right' });
-    y += 6;
-
-    const creatorName = readEl('dashUserName') || readEl('sidebarName');
-    const platform    = readEl('platformBadge');
-    if (creatorName && creatorName !== '—') {
-      setFont(10, 'normal', MUTED);
-      doc.text(`Creator: ${creatorName}  ·  Platform: ${platform}`, MARGIN, y + 12);
-      y += 20;
-    }
-
-    y += 8;
-    hRule(ACCENT, 1);
-
-    /* ── KPI SUMMARY ── */
-    textLine('Key Performance Indicators', 14, 'bold', FG);
-    y += 4;
-
-    const kpis = [
-      { label: 'Engagement Rate', id: 'kpiEngRate' },
-      { label: 'Follower Growth', id: 'kpiGrowth' },
-      { label: 'Revenue Volatility', id: 'kpiVolatility' },
-      { label: 'Total Followers', id: 'kpiFollowers' },
-      { label: 'Total Posts', id: 'kpiPosts' },
-      { label: 'Revenue', id: 'kpiRevenue' },
-    ];
-
-    const boxW   = (INNER - 10 * 2) / 3;
-    const startX = MARGIN;
-
-    for (let i = 0; i < kpis.length; i += 3) {
-      checkSpace(60);
-      [0, 1, 2].forEach(j => {
-        const k = kpis[i + j];
-        if (!k) return;
-        kpiBox(k.label, readEl(k.id), startX + j * (boxW + 10), boxW, ACCENT);
-      });
-      y += 58;
-    }
-
-    /* ── HEALTH SCORE ── */
-    const healthVal = readEl('healthScoreValue');
-    const healthSts = readEl('healthScoreStatus');
-    if (healthVal && healthVal !== '—') {
-      checkSpace(44);
-      doc.setFillColor(isDark ? '#1A2035' : '#F1F5F9');
-      doc.roundedRect(MARGIN, y, INNER, 38, 4, 4, 'F');
-      setFont(10, 'bold', MUTED);
-      doc.text('CREATOR BUSINESS HEALTH SCORE', MARGIN + 12, y + 14);
-      setFont(16, 'bold', GREEN);
-      doc.text(`${healthVal}  ·  ${healthSts}`, MARGIN + 12, y + 32);
-      y += 50;
-    }
-
-    y += 4;
-    hRule(ACCENT, 0.5);
-
-    /* ── CHARTS ── */
+    /* ── Charts ── */
     const chartDefs = [
       { key: 'followers',  label: 'Follower Growth' },
-      { key: 'posts',      label: 'Post Frequency' },
       { key: 'engagement', label: 'Engagement Rate' },
+      { key: 'posts',      label: 'Post Frequency' },
       { key: 'revenue',    label: 'Revenue' },
     ];
 
-    const validCharts = chartDefs.filter(cd => window.charts && window.charts[cd.key]);
+    const available = chartDefs.filter(cd => window.charts && window.charts[cd.key]);
 
-    if (validCharts.length > 0) {
-      textLine('Analytics Charts', 14, 'bold', FG);
-      y += 4;
+    if (available.length > 0) {
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(FG);
+      doc.text('Charts', M, y);
+      y += 14;
 
-      const chartW = (INNER - 12) / 2;
-      const chartH = chartW * 0.55;
+      const cw = (INNER - 12) / 2;
+      const ch = cw * 0.5;
 
-      for (let i = 0; i < validCharts.length; i += 2) {
-        checkSpace(chartH + 30);
+      for (let i = 0; i < available.length; i += 2) {
+        space(ch + 24);
         [0, 1].forEach(j => {
-          const cd = validCharts[i + j];
+          const cd = available[i + j];
           if (!cd) return;
-          const imgData = window.charts[cd.key].toBase64Image('image/png', 1);
-          const x = MARGIN + j * (chartW + 12);
-          doc.setFillColor(isDark ? '#1A2035' : '#F8FAFC');
-          doc.roundedRect(x, y, chartW, chartH + 20, 4, 4, 'F');
-          setFont(9, 'bold', FG);
-          doc.text(cd.label, x + 8, y + 13);
-          doc.addImage(imgData, 'PNG', x + 4, y + 18, chartW - 8, chartH - 4);
+          const img = window.charts[cd.key].toBase64Image('image/png', 1);
+          const x   = M + j * (cw + 12);
+          doc.setFillColor('#F8FAFC');
+          doc.roundedRect(x, y, cw, ch + 16, 3, 3, 'F');
+          doc.setFontSize(8);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(MUTED);
+          doc.text(cd.label.toUpperCase(), x + 8, y + 11);
+          doc.addImage(img, 'PNG', x + 4, y + 14, cw - 8, ch - 2);
         });
-        y += chartH + 28;
+        y += ch + 22;
       }
-      y += 4;
-      hRule(ACCENT, 0.5);
+
+      y += 6;
+      doc.setDrawColor(PURPLE);
+      doc.setLineWidth(0.5);
+      doc.line(M, y, PW - M, y);
+      y += 18;
     }
 
-    /* ── AI INSIGHTS ── */
-    const aiResult = window._aiResult;
-    if (aiResult && Array.isArray(aiResult.insights) && aiResult.insights.length > 0) {
-      checkSpace(40);
-      textLine('AI-Generated Insights', 14, 'bold', FG);
-      if (aiResult.summary) {
-        wrappedText(aiResult.summary, 10, MUTED);
-        y += 4;
+    /* ── AI Insights ── */
+    const ai = window._aiResult;
+    if (ai && Array.isArray(ai.insights) && ai.insights.length > 0) {
+      space(30);
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(FG);
+      doc.text('AI Insights', M, y);
+      y += 6;
+
+      if (ai.summary) {
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(MUTED);
+        const lines = doc.splitTextToSize(ai.summary, INNER);
+        lines.forEach(l => {
+          space(13);
+          doc.text(l, M, y);
+          y += 13;
+        });
       }
+      y += 8;
 
-      aiResult.insights.forEach(ins => {
-        checkSpace(60);
-        const sevColor = ins.severity === 'high' ? RED : ins.severity === 'medium' ? '#FBBF24' : GREEN;
-        const icon     = ins.severity === 'high' ? '⚠' : ins.severity === 'medium' ? '◆' : '✓';
+      ai.insights.forEach(ins => {
+        space(70);
+        const sevColor = ins.severity === 'high' ? RED : ins.severity === 'medium' ? ORANGE : GREEN;
 
-        doc.setFillColor(isDark ? '#1A2035' : '#F8FAFC');
+        doc.setFillColor('#F8FAFC');
         doc.setDrawColor(sevColor);
-        doc.setLineWidth(2);
-        doc.roundedRect(MARGIN, y, INNER, 4, 0, 0, 'F');
+        doc.setLineWidth(3);
+        doc.roundedRect(M, y, INNER, 3, 0, 0, 'F');
+        doc.line(M, y, M, y + 3);
 
-        const titleStart = y + 4;
-        setFont(11, 'bold', FG);
-        doc.text(`${icon}  ${ins.title}`, MARGIN + 8, titleStart + 14);
-
-        const sevLabel = ins.severity.charAt(0).toUpperCase() + ins.severity.slice(1);
-        doc.setFontSize(8);
-        doc.setTextColor(sevColor);
-        doc.text(sevLabel, PW - MARGIN - 4, titleStart + 14, { align: 'right' });
-
-        y = titleStart + 22;
-
-        if (ins.explanation) wrappedText(ins.explanation, 10, MUTED, 8);
-        if (ins.action) {
-          y += 2;
-          setFont(9, 'bold', ACCENT);
-          doc.text('Recommendation:', MARGIN + 8, y);
-          y += 12;
-          wrappedText(ins.action, 9, ACCENT, 8);
-        }
         y += 10;
-      });
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(FG);
+        doc.text(ins.title || '', M + 4, y);
 
-      hRule(ACCENT, 0.5);
-    }
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(sevColor);
+        doc.text((ins.severity || '').toUpperCase(), PW - M, y, { align: 'right' });
+        y += 14;
 
-    /* ── FUTURE PLAN ── */
-    const planCards = document.getElementById('planCards');
-    if (planCards && planCards.innerHTML.trim() && !planCards.innerHTML.includes('hidden')) {
-      checkSpace(40);
-      textLine('Future Plan & Projections', 14, 'bold', FG);
-      y += 4;
-
-      const projItems = document.querySelectorAll('#planCards .proj-item');
-      projItems.forEach(item => {
-        const label = item.querySelector('.proj-label');
-        const val   = item.querySelector('.proj-value');
-        const sub   = item.querySelector('.proj-sub');
-        if (!label || !val) return;
-        checkSpace(28);
-        doc.setFillColor(isDark ? '#1A2035' : '#F1F5F9');
-        doc.roundedRect(MARGIN, y, INNER, 24, 3, 3, 'F');
-        setFont(9, 'bold', MUTED);
-        doc.text(label.textContent.trim().toUpperCase(), MARGIN + 8, y + 10);
-        setFont(10, 'bold', ACCENT);
-        doc.text(val.textContent.trim(), MARGIN + 8, y + 20);
-        if (sub) {
-          setFont(8, 'normal', MUTED);
-          doc.text(sub.textContent.trim(), PW - MARGIN - 8, y + 20, { align: 'right' });
+        if (ins.explanation) {
+          doc.setFontSize(9);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(MUTED);
+          const lines = doc.splitTextToSize(ins.explanation, INNER - 8);
+          lines.forEach(l => {
+            space(12);
+            doc.text(l, M + 4, y);
+            y += 12;
+          });
         }
-        y += 30;
+
+        if (ins.action) {
+          y += 3;
+          space(12);
+          doc.setFontSize(8);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(PURPLE);
+          const recLines = doc.splitTextToSize('Recommendation: ' + ins.action, INNER - 8);
+          recLines.forEach(l => {
+            space(12);
+            doc.text(l, M + 4, y);
+            y += 12;
+          });
+        }
+
+        y += 12;
       });
-
-      const aiActions = window._aiResult && window._aiResult.actions;
-      const period    = String(window._currentPlanPeriod || 30);
-      if (aiActions && aiActions[period] && aiActions[period].length > 0) {
-        y += 6;
-        checkSpace(30);
-        setFont(11, 'bold', FG);
-        doc.text('Action Plan', MARGIN, y);
-        y += 16;
-        aiActions[period].forEach((action, i) => {
-          checkSpace(20);
-          wrappedText(`${i + 1}.  ${action}`, 10, MUTED, 8);
-          y += 2;
-        });
-      }
-
-      hRule(ACCENT, 0.5);
     }
 
-    /* ── FOOTER on all pages ── */
-    const totalPages = doc.internal.getNumberOfPages();
-    for (let p = 1; p <= totalPages; p++) {
+    /* ── Footer on every page ── */
+    const total = doc.internal.getNumberOfPages();
+    for (let p = 1; p <= total; p++) {
       doc.setPage(p);
-      setFont(8, 'normal', MUTED);
-      doc.text('Smart Content Manager  ·  Confidential', MARGIN, PH - 20);
-      doc.text(`Page ${p} of ${totalPages}`, PW - MARGIN, PH - 20, { align: 'right' });
-      doc.setDrawColor(ACCENT);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(MUTED);
+      doc.text('Smart Content Manager', M, PH - 18);
+      doc.text('Page ' + p + ' of ' + total, PW - M, PH - 18, { align: 'right' });
+      doc.setDrawColor(PURPLE);
       doc.setLineWidth(3);
-      doc.line(0, PH - 6, PW, PH - 6);
+      doc.line(0, PH - 5, PW, PH - 5);
     }
 
-    const filename = `SCM_Report_${(creatorName || 'creator').replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.pdf`;
-    doc.save(filename);
-    showToast('Report downloaded successfully!', 'success');
+    const name = (creatorName || 'report').trim().replace(/\s+/g, '_');
+    doc.save('SCM_Report_' + name + '_' + new Date().toISOString().slice(0, 10) + '.pdf');
+    showToast('Report downloaded!', 'success');
 
   } catch (err) {
     console.error('PDF export error:', err);
