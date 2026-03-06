@@ -2219,18 +2219,34 @@ function renderSettings() {
       } else {
         ctCard.style.display = '';
         const saved = Array.isArray(data.contentTypes) ? data.contentTypes : [];
+        const knownTypes = ['entertainment','makeup','educational','fitness','gaming','food','travel','tech','other'];
+        const customOther = saved.find(t => !knownTypes.includes(t));
         document.querySelectorAll('#settingsContentChips .content-chip').forEach(chip => {
-          chip.classList.toggle('selected', saved.includes(chip.dataset.type));
+          const isSelected = chip.dataset.type === 'other' ? (saved.includes('other') || !!customOther) : saved.includes(chip.dataset.type);
+          chip.classList.toggle('selected', isSelected);
         });
+        const otherInp = document.getElementById('settingsOtherTypeInput');
+        if (otherInp && customOther) {
+          otherInp.style.display = 'block';
+          otherInp.value = customOther;
+        }
       }
     }
   });
 
   // Content type chips toggle
+  const settingsOtherInput = document.getElementById('settingsOtherTypeInput');
   document.querySelectorAll('#settingsContentChips .content-chip').forEach(chip => {
     if (!chip._bound) {
       chip._bound = true;
-      chip.addEventListener('click', () => chip.classList.toggle('selected'));
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('selected');
+        if (chip.dataset.type === 'other' && settingsOtherInput) {
+          settingsOtherInput.style.display = chip.classList.contains('selected') ? 'block' : 'none';
+          if (chip.classList.contains('selected')) settingsOtherInput.focus();
+          else settingsOtherInput.value = '';
+        }
+      });
     }
   });
 
@@ -2239,8 +2255,9 @@ function renderSettings() {
   if (saveCtBtn && !saveCtBtn._bound) {
     saveCtBtn._bound = true;
     saveCtBtn.addEventListener('click', async () => {
+      const settingsOtherVal = (document.getElementById('settingsOtherTypeInput')?.value || '').trim();
       const types = [...document.querySelectorAll('#settingsContentChips .content-chip.selected')]
-        .map(c => c.dataset.type);
+        .map(c => c.dataset.type === 'other' ? (settingsOtherVal || 'other') : c.dataset.type);
       await db.ref('users/' + user.uid).update({ contentTypes: types });
       showToast(i18n.t('toast.content.type.saved'), 'success');
     });
