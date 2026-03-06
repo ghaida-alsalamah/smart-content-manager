@@ -101,6 +101,7 @@ const translations = {
     "ctype.travel":        "Travel",
     "ctype.tech":          "Tech",
     "ctype.other":         "Other",
+    "ctype.other.placeholder": "Describe your content type...",
     "brand.filter.all":    "All Types",
 
     /* ---------- Dashboard ---------- */
@@ -665,6 +666,7 @@ const translations = {
     "ctype.travel":        "سفر",
     "ctype.tech":          "تقنية",
     "ctype.other":         "أخرى",
+    "ctype.other.placeholder": "اكتب نوع المحتوى الخاص بك...",
     "brand.filter.all":    "جميع الأنواع",
 
     /* ---------- Dashboard ---------- */
