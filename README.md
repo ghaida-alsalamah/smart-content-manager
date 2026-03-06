@@ -163,7 +163,7 @@ This workflow allowed the team to move from concept to a working AI-powered plat
 
 ## Why This Matters
 
-Smart Content Manager helps creators move from guess-based decisions to data-driven strategy.
+Smart Content Manager helps creators move from guess-based decisions to data-driven strategy. 
 
 By transforming raw analytics into insights and forecasts, the platform empowers creators to:
 - understand their audience performance
