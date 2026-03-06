@@ -27,6 +27,7 @@ const translations = {
     "hero.stat2.label": "Accuracy",
     "hero.stat3.num":   "3×",
     "hero.stat3.label": "Revenue Growth",
+    "hero.revenue.val": "SAR 4,200",
 
     /* ---------- Features ---------- */
     "features.tag":     "What We Offer",
@@ -589,6 +590,7 @@ const translations = {
     "hero.stat2.label": "دقة التنبؤ",
     "hero.stat3.num":   "3×",
     "hero.stat3.label": "نمو الإيرادات",
+    "hero.revenue.val": "﷼4,200",
 
     /* ---------- Features ---------- */
     "features.tag":     "ماذا نقدم",
