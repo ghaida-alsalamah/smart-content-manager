@@ -1,4 +1,4 @@
-# Smart Content Manager (SCM) — مدير المحتوى الذكي
+# Smart Content Manager (SCM) — مدير المحتوى الذكي  
 
 Smart Content Manager (SCM) is an AI-powered analytics platform designed primarily for content creators to better understand their performance, plan growth strategies, and determine fair pricing for brand collaborations.
 
