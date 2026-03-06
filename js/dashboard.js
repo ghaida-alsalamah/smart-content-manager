@@ -20,7 +20,7 @@ const _claudeHeaders = { 'content-type': 'application/json' };
 const _isLocal       = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 
 /* ---- Global state ---- */
-let charts          = {};
+var charts          = {};
 let csvData         = [];
 let userRole        = 'creator';
 let activePlatform  = 'all';
