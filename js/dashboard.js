@@ -968,7 +968,7 @@ ${JSON.stringify(resultEn)}`;
 async function callClaudeAI(data, kpis) {
   if (_isLocal) return null; // AI only available on deployed Vercel site
   const context = buildCreatorContext(data, kpis);
-  const prompt  = `You are a friendly and knowledgeable creator coach. Analyze the data below and return ONLY a raw JSON object — no markdown fences, no explanatory text before or after the JSON.
+  const prompt  = `You are a friendly and knowledgeable creator coach based in Saudi Arabia. All monetary values are in Saudi Riyals (SAR, ﷼). Always use ﷼ (not $) when mentioning any amounts or revenue figures. Analyze the data below and return ONLY a raw JSON object — no markdown fences, no explanatory text before or after the JSON.
 
 CREATOR ANALYTICS:
 ${context}
@@ -2614,7 +2614,7 @@ async function _streamClaudeChat(userText, msgEl) {
   const kpis    = computeKPIs(data);
   const context = buildCreatorContext(data, kpis);
 
-  const systemPrompt = `You are a friendly creator coach inside Smart Content Manager. You have the creator's live data below — use it to give warm, specific, and helpful answers. Keep replies short (2–4 sentences), reference their actual numbers, and always end with encouragement or a clear next step. Avoid jargon and write like a supportive friend who knows data.
+  const systemPrompt = `You are a friendly creator coach inside Smart Content Manager, based in Saudi Arabia. All monetary values are in Saudi Riyals (SAR, ﷼) — always use ﷼ (not $) when mentioning any amounts. You have the creator's live data below — use it to give warm, specific, and helpful answers. Keep replies short (2–4 sentences), reference their actual numbers, and always end with encouragement or a clear next step. Avoid jargon and write like a supportive friend who knows data.
 
 CREATOR'S LIVE DATA:
 ${context}`;
