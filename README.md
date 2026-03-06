@@ -180,6 +180,8 @@ This contributes to a more transparent and data-driven creator economy.
 
 ---
 
-## Screenshots
-
-*(Add screenshots of the dashboard, AI insights, strategy planner, and brand collaboration interface)*
+## Team Members
+- Ghaida Alsalamah
+- Layan Alsulaiman
+- Rand Alrabiah
+- Razan Alfurih 
