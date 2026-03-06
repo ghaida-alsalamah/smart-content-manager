@@ -2110,9 +2110,9 @@ Best regards,
       <div class="brand-report-grid">
         <!-- Engagement Analysis -->
         <div class="brand-report-card">
-          <div class="settings-card-title">Engagement Analysis</div>
-          <div class="brand-metric-row"><span class="brand-metric-label">Avg. Engagement Rate</span><span class="brand-metric-value" style="color:var(--accent-blue)">${kpis.avgEngRate.toFixed(2)}%</span></div>
-          <div class="brand-metric-row"><span class="brand-metric-label">Engagement Tier</span><span class="brand-metric-value">${pricing.tier}</span></div>
+          <div class="settings-card-title">${i18n.t('brand.engagement.analysis')}</div>
+          <div class="brand-metric-row"><span class="brand-metric-label">${i18n.t('dash.kpi.engRate')}</span><span class="brand-metric-value" style="color:var(--accent-blue)">${kpis.avgEngRate.toFixed(2)}%</span></div>
+          <div class="brand-metric-row"><span class="brand-metric-label">${i18n.t('pricing.engagement.tier')}</span><span class="brand-metric-value">${pricing.tier}</span></div>
           <div class="brand-metric-row"><span class="brand-metric-label">Follower Growth</span><span class="brand-metric-value" style="color:${kpis.followerGrowth > 0 ? 'var(--accent-green)' : 'var(--accent-red)'};">${kpis.followerGrowth > 0 ? '+' : ''}${kpis.followerGrowth.toFixed(1)}%</span></div>
           <div class="brand-metric-row"><span class="brand-metric-label">Total Followers</span><span class="brand-metric-value">${formatNum(kpis.totalFollowers)}</span></div>
           <div class="brand-metric-row"><span class="brand-metric-label">Revenue Stability</span><span class="brand-metric-value" style="color:${kpis.revCV > 30 ? 'var(--accent-red)' : kpis.revCV > 20 ? 'var(--accent-orange)' : 'var(--accent-green)'};">${kpis.revCV > 30 ? i18n.t('kpi.high.instability') : kpis.revCV > 20 ? i18n.t('kpi.moderate.instability') : i18n.t('kpi.stable')}</span></div>

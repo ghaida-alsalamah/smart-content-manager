@@ -213,6 +213,7 @@ const translations = {
 
     /* ---------- Brand ---------- */
     "brand.welcome":        "Brand Evaluation Portal",
+    "brand.engagement.analysis": "Engagement Analysis",
     "brand.sub":            "Upload a creator's analytics CSV to evaluate engagement, pricing, and ROI.",
     "brand.upload.title":   "Evaluate a Creator",
     "brand.upload.desc":    "Upload the creator's analytics export CSV to get a full evaluation report.",
@@ -789,6 +790,7 @@ const translations = {
 
     /* ---------- Brand ---------- */
     "brand.welcome":        "بوابة تقييم العلامات التجارية",
+    "brand.engagement.analysis": "تحليل التفاعل",
     "brand.sub":            "ارفع ملف CSV تحليلات منشئ المحتوى للحصول على تقييم شامل للتفاعل والتسعير وعائد الاستثمار.",
     "brand.upload.title":   "تقييم منشئ محتوى",
     "brand.upload.desc":    "ارفع ملف تصدير التحليلات CSV للحصول على تقرير تقييم كامل.",
